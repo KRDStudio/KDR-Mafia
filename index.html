@@ -4,755 +4,1779 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="color-scheme" content="dark" />
-  <title>TEK Ailesi: Yaşam Simülasyonu — v3 (Bankacılık, Malvarlığı, Soy Ağacı)</title>
+  <title>KDR LİFE — Yaşam Simülasyonu</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300,400,600,700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400,600,700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      --bg0:#0b0c10;
-      --bg1:#0f1118;
-      --ink:#e9e7df;
-      --muted:#b9b6ad;
+      --bg0:#07080b;
+      --bg1:#0e1016;
+      --ink:#ebe8df;
+      --muted:#b8b4ab;
+
       --gold:#d7b86a;
-      --rust:#c86a4a;
       --jade:#6ed6b7;
       --ice:#86b6ff;
+      --rust:#c86a4a;
+
       --line: rgba(255,255,255,.12);
       --line2: rgba(255,255,255,.08);
-      --shadow: 0 22px 60px rgba(0,0,0,.52);
-      --r-lg: 18px;
+      --shadow: 0 24px 70px rgba(0,0,0,.58);
+
+      --r-xl: 30px;
+      --r-lg: 24px;
+      --r-md: 18px;
+
       --max: 1280px;
       --ease: cubic-bezier(.2,.9,.2,1);
     }
+
     *{ box-sizing:border-box; }
     html,body{ height:100%; margin:0; color:var(--ink); font-family:"IBM Plex Sans", ui-sans-serif, system-ui, sans-serif; background:linear-gradient(180deg, var(--bg0), var(--bg1)); overflow-x:hidden; }
+
     a{ color:inherit; }
-    button{ font:inherit; color:inherit; }
+    button,input,select,textarea{ font:inherit; color:inherit; }
+    button{ cursor:pointer; }
 
-    /* UI (kısaltılmış) */
-    .btn{ border:1px solid var(--line); padding:8px 12px; border-radius:999px; background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)); cursor:pointer; color:var(--ink); }
-    .btn.primary{ background:linear-gradient(180deg, rgba(215,184,106,.16), rgba(255,255,255,.03)); border-color:rgba(215,184,106,.6); }
-    .btn.danger{ background:linear-gradient(180deg, rgba(200,106,74,.12), rgba(255,255,255,.03)); border-color:rgba(200,106,74,.6); }
-    .pill{ background:rgba(255,255,255,.04); padding:8px 12px; border-radius:999px; display:inline-flex; gap:8px; align-items:center; }
-    .panel{ border-radius:var(--r-lg); padding:14px; border:1px solid var(--line2); background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)); box-shadow:var(--shadow); }
-    .panel.soft{ background:rgba(255,255,255,.02); box-shadow:none; }
-    .log{ max-height:300px; overflow:auto; background:rgba(0,0,0,.22); padding:12px; border-radius:12px; }
-    .choice{ display:flex; justify-content:space-between; gap:12px; padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,.06); background:rgba(255,255,255,.02); cursor:pointer; color:var(--ink); }
-    .map-wrap{ border-radius:12px; padding:12px; border:1px solid rgba(255,255,255,.06); background:rgba(255,255,255,.02); }
-    .listing-grid{ display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); }
-    .listing-card{ background:#fff;color:#111;padding:10px;border-radius:12px; display:flex;flex-direction:column; justify-content:space-between; min-height:120px; }
-    .listing-card .price{ font-weight:800; }
-    .asset-row{ display:flex;justify-content:space-between;gap:10px;padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,.04); background:rgba(255,255,255,.02); color:var(--ink); }
-    .family-tree{ display:flex; gap:8px; flex-wrap:wrap; }
-    .family-node{ padding:8px 10px; border-radius:10px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); min-width:120px; color:var(--ink); }
+    /* Grain */
+    .grain{
+      position:fixed; inset:0; pointer-events:none;
+      background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.42'/%3E%3C/svg%3E");
+      mix-blend-mode:overlay; opacity:.08;
+      z-index:0;
+    }
 
-    /* modal */
-    .modal{ display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); align-items:center; justify-content:center; z-index:9999; padding:18px; }
+    /* Background */
+    .bg{
+      position:fixed; inset:0; z-index:-2;
+      background:
+        radial-gradient(1200px 700px at 14% 10%, rgba(215,184,106,.14), transparent 60%),
+        radial-gradient(900px 600px at 78% 12%, rgba(134,182,255,.11), transparent 55%),
+        radial-gradient(900px 700px at 70% 86%, rgba(110,214,183,.09), transparent 55%),
+        radial-gradient(700px 500px at 12% 86%, rgba(200,106,74,.10), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+    }
+    .topo{
+      position:fixed; inset:-10% -10%; z-index:-1; opacity:.55;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px) 0 0 / 54px 54px,
+        linear-gradient(0deg, rgba(255,255,255,.04) 1px, transparent 1px) 0 0 / 54px 54px;
+      transform:skewY(-9deg);
+      filter: blur(.2px);
+      mask-image: radial-gradient(60% 55% at 55% 45%, #000 40%, transparent 70%);
+    }
+
+    /* Layout */
+    .app{
+      position:relative;
+      z-index:1;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter: blur(12px);
+      background: rgba(7,8,11,.72);
+      border-bottom:1px solid var(--line2);
+    }
+    .header-inner{
+      max-width:var(--max);
+      margin:0 auto;
+      padding:14px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:min(520px, 100%);
+    }
+    .mark{
+      width:42px;
+      height:42px;
+      border-radius:14px;
+      background: linear-gradient(135deg, rgba(215,184,106,1), rgba(200,106,74,1));
+      box-shadow: 0 14px 34px rgba(215,184,106,.22);
+      position:relative;
+      overflow:hidden;
+      flex:0 0 auto;
+    }
+    .mark:after{
+      content:"";
+      position:absolute;
+      inset:-35%;
+      background: conic-gradient(from 210deg, rgba(255,255,255,0), rgba(255,255,255,.75), rgba(255,255,255,0));
+      transform: rotate(18deg);
+      opacity:.32;
+    }
+    .brand h1{
+      margin:0;
+      font-family:"Fraunces", serif;
+      letter-spacing:.14em;
+      font-size:18px;
+      line-height:1.05;
+    }
+    .brand p{
+      margin:4px 0 0;
+      color:var(--muted);
+      font-size:12.5px;
+    }
+
+    .hud{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      align-items:center;
+      flex:1;
+    }
+    .pill{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      border:1px solid var(--line2);
+      background: rgba(255,255,255,.04);
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:13px;
+      white-space:nowrap;
+    }
+    .pill strong{
+      color:var(--muted);
+      letter-spacing:.12em;
+      font-size:12px;
+    }
+
+    .btn{
+      user-select:none;
+      border:1px solid var(--line);
+      background:
+        radial-gradient(60% 120% at 20% 20%, rgba(255,255,255,.10), transparent),
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      padding:10px 14px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      transition: transform .18s var(--ease), border-color .18s var(--ease), filter .18s var(--ease);
+      white-space:nowrap;
+    }
+    .btn:hover{ transform:translateY(-1px); border-color:rgba(215,184,106,.55); filter:saturate(1.05); }
+    .btn:active{ transform:translateY(0) scale(.99); }
+    .btn.primary{
+      border-color: rgba(215,184,106,.72);
+      background:
+        radial-gradient(70% 140% at 18% 12%, rgba(215,184,106,.25), transparent),
+        linear-gradient(180deg, rgba(215,184,106,.18), rgba(255,255,255,.03));
+      font-weight:800;
+    }
+    .btn.danger{
+      border-color: rgba(200,106,74,.65);
+      background:
+        radial-gradient(70% 140% at 18% 12%, rgba(200,106,74,.22), transparent),
+        linear-gradient(180deg, rgba(200,106,74,.10), rgba(255,255,255,.03));
+      font-weight:800;
+    }
+
+    main{
+      max-width:var(--max);
+      width:100%;
+      margin:0 auto;
+      padding:22px 18px 78px;
+    }
+
+    /* Views */
+    .view{ display:none; }
+    .view.active{ display:block; }
+
+    /* Start Screen */
+    .start{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:18px;
+      align-items:stretch;
+    }
+    .panel{
+      border:1px solid var(--line2);
+      border-radius:var(--r-xl);
+      background:
+        radial-gradient(1000px 520px at 14% 0%, rgba(215,184,106,.14), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panel.soft{
+      background: rgba(255,255,255,.03);
+      box-shadow:none;
+    }
+    .panel-pad{ padding:18px; }
+
+    .title{
+      margin:0;
+      font-family:"Fraunces", serif;
+      font-weight:700;
+      font-size:clamp(34px, 4.6vw, 60px);
+      letter-spacing:.02em;
+      line-height:1.04;
+    }
+    .subtitle{
+      margin:10px 0 0;
+      color:var(--muted);
+      font-size:14.5px;
+      line-height:1.6;
+      max-width:70ch;
+    }
+
+    .form{
+      display:grid;
+      gap:12px;
+      margin-top:14px;
+    }
+    .field{ display:grid; gap:6px; }
+    .label{
+      color:rgba(236,233,223,.90);
+      font-size:12px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+    }
+    .control{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.22);
+      border-radius:16px;
+      padding:12px 12px;
+      outline:none;
+      transition:border-color .18s var(--ease), box-shadow .18s var(--ease);
+    }
+    .control:focus{
+      border-color: rgba(134,182,255,.55);
+      box-shadow: 0 0 0 4px rgba(134,182,255,.12);
+    }
+
+    /* BLACK & WHITE City selector */
+    .city-grid{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap:10px;
+    }
+    .city{
+      text-align:left;
+      border-radius:18px;
+      padding:12px 12px;
+      border:1px solid rgba(255,255,255,.14);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      transition: transform .18s var(--ease), border-color .18s var(--ease), background .18s var(--ease);
+      position:relative;
+      overflow:hidden;
+      color: rgba(235,232,223,.92);
+    }
+    .city:hover{
+      transform: translateY(-1px);
+      border-color: rgba(255,255,255,.36);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+    }
+    .city[aria-pressed="true"]{
+      border-color: rgba(255,255,255,.70);
+      background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.04));
+    }
+    .city .name{
+      font-weight:900;
+      letter-spacing:.06em;
+    }
+    .city .meta{
+      color: rgba(255,255,255,.72);
+      font-size:12.5px;
+      margin-top:6px;
+      line-height:1.35;
+    }
+    .city .sig{
+      position:absolute;
+      right:12px; top:12px;
+      width:10px; height:10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.18);
+      border:1px solid rgba(255,255,255,.22);
+    }
+    .city[aria-pressed="true"] .sig{
+      background: rgba(255,255,255,.92);
+      border-color: rgba(255,255,255,.92);
+    }
+
+    /* Game view */
+    .game{
+      display:grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap:18px;
+      align-items:start;
+    }
+
+    .log{
+      max-height:330px;
+      overflow:auto;
+      scroll-behavior:smooth;
+      background: rgba(0,0,0,.28);
+      border:1px solid rgba(255,255,255,.06);
+      padding:14px;
+      border-radius:18px;
+    }
+    .entry{
+      display:grid;
+      grid-template-columns: 110px 1fr;
+      gap:12px;
+      padding:10px 0;
+      border-bottom:1px dashed rgba(255,255,255,.10);
+    }
+    .entry:last-child{ border-bottom:none; }
+    .t{
+      color:var(--muted);
+      font-size:12px;
+      letter-spacing:.10em;
+      text-transform:uppercase;
+    }
+    .m{
+      font-size:13.5px;
+      line-height:1.45;
+    }
+    .m strong{ color:var(--gold); }
+
+    .choice{
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:18px;
+      padding:12px 14px;
+      background:
+        radial-gradient(70% 120% at 15% 0%, rgba(255,255,255,.08), transparent),
+        linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      transition: transform .18s var(--ease), border-color .18s var(--ease);
+      cursor:pointer;
+      text-align:left;
+      width:100%;
+    }
+    .choice:hover{ transform:translateY(-1px); border-color: rgba(215,184,106,.45); }
+    .choice:active{ transform:translateY(0) scale(.995); }
+    .choice .meta{ color:var(--muted); font-size:12.5px; line-height:1.35; }
+    .choice .title{ font-weight:900; }
+    .choice .delta{
+      flex:0 0 auto;
+      font-size:12px;
+      border-radius:999px;
+      padding:7px 10px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+      white-space:nowrap;
+      align-self:center;
+    }
+
+    .stat{
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:18px;
+      padding:12px;
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+    }
+    .stat .k{ color:var(--muted); font-size:12px; letter-spacing:.12em; text-transform:uppercase; }
+    .stat .v{ font-size:18px; font-weight:900; margin-top:6px; }
+
+    .divider{ height:1px; background: rgba(255,255,255,.08); margin:14px 0; }
+
+    /* NPC Chat */
+    .chat{
+      display:grid;
+      gap:10px;
+    }
+    .chatbox{
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:18px;
+      background: rgba(0,0,0,.22);
+      padding:12px;
+      min-height:170px;
+      max-height:220px;
+      overflow:auto;
+    }
+    .bubble{
+      max-width: 92%;
+      padding:10px 12px;
+      border-radius:16px;
+      margin:8px 0;
+      line-height:1.45;
+      font-size:13.5px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.04);
+    }
+    .bubble.me{
+      margin-left:auto;
+      background: rgba(215,184,106,.10);
+      border-color: rgba(215,184,106,.18);
+    }
+    .chat-controls{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .chat-controls input{
+      flex:1;
+      min-width:160px;
+    }
+
+    /* Family tree */
+    .tree{
+      display:grid;
+      gap:10px;
+    }
+    .member{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      padding:12px 12px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.18);
+    }
+    .member .who{
+      display:grid;
+      gap:4px;
+      min-width:0;
+    }
+    .member .who strong{
+      font-weight:900;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .member .who span{
+      color:var(--muted);
+      font-size:12.5px;
+    }
+    .tag{
+      font-size:12px;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      white-space:nowrap;
+    }
+
+    /* Market modal (Sahibinden vibe) */
+    .modal{
+      display:none;
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.82);
+      align-items:center; justify-content:center;
+      z-index:1000;
+      padding:18px;
+    }
     .modal[aria-hidden="false"]{ display:flex; }
-    .modal .modal-box{ width:min(920px,98vw); max-height:92vh; overflow:auto; border-radius:14px; padding:14px; background:var(--bg1); border:1px solid rgba(255,255,255,.06); }
+    .modal-content{
+      width: min(1100px, 98vw);
+      max-height: 92vh;
+      overflow:hidden;
+      border-radius: var(--r-xl);
+      box-shadow: var(--shadow);
+      border:1px solid rgba(255,255,255,.10);
+      background: #fff;
+      color:#111;
+      display:flex;
+      flex-direction:column;
+    }
+    .s-header{
+      padding:12px 14px;
+      border-bottom:3px solid #e31e24;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .s-logo{
+      display:flex; align-items:center; gap:10px;
+      font-weight:900;
+      letter-spacing:.08em;
+    }
+    .s-mark{
+      width:38px; height:38px;
+      border-radius:12px;
+      background: linear-gradient(135deg,#ffd24a,#ff6a6a);
+      position:relative;
+      overflow:hidden;
+    }
+    .s-mark:after{
+      content:""; position:absolute; inset:-30%;
+      background: conic-gradient(from 180deg, rgba(255,255,255,0), rgba(255,255,255,.8), rgba(255,255,255,0));
+      transform: rotate(12deg);
+      opacity:.35;
+    }
+    .s-search{
+      flex:1;
+      min-width:220px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      background:#f8f8f8;
+      border:1px solid #ddd;
+      border-radius:999px;
+      padding:10px 14px;
+    }
+    .s-search input{
+      border:none; outline:none; background:transparent; width:100%;
+      font-size:14px;
+      color:#111;
+    }
+    .s-tab{
+      padding:8px 12px;
+      border-radius:10px;
+      cursor:pointer;
+      transition:.2s;
+      font-weight:900;
+      font-size:13px;
+      border:1px solid rgba(0,0,0,.08);
+      background:#fff;
+    }
+    .s-tab.active{ background:#e31e24; color:#fff; border-color:#e31e24; }
 
-    /* small */
-    .muted{ color:var(--muted); font-size:13px; }
-    input, select{ padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,.06); background:rgba(0,0,0,.18); color:var(--ink); outline:none; }
-    table{ width:100%; border-collapse:collapse; color:var(--ink); }
-    td,th{ padding:8px; border-bottom:1px solid rgba(255,255,255,.03); text-align:left; }
-    @media (max-width:900px){ .grid{ grid-template-columns:1fr !important; } }
+    .s-filters{
+      padding:10px 14px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      border-bottom:1px solid #e6e6e6;
+      background:#f8f8f8;
+    }
+    .s-pill{
+      background:#fff;
+      border:1px solid #e3e3e3;
+      border-radius:999px;
+      padding:8px 10px;
+      display:flex;
+      gap:8px;
+      align-items:center;
+      font-size:12.5px;
+    }
+    .s-pill select{
+      border:none; outline:none; background:transparent; font:inherit; color:#111;
+    }
+
+    .s-grid{
+      padding:14px;
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap:12px;
+      overflow:auto;
+    }
+    .s-card{
+      grid-column: span 6;
+      border:1px solid #e7e7e7;
+      border-radius:14px;
+      overflow:hidden;
+      background:#fff;
+      transition: transform .18s var(--ease), box-shadow .18s var(--ease), border-color .18s var(--ease);
+      display:flex;
+      flex-direction:column;
+      min-height:170px;
+    }
+    .s-card:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(227,30,36,.12);
+      border-color: rgba(227,30,36,.35);
+    }
+    .s-top{
+      padding:12px;
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+    }
+    .thumb{
+      width:72px; height:72px;
+      border-radius:14px;
+      border:1px solid rgba(0,0,0,.08);
+      flex:0 0 auto;
+      position:relative;
+      overflow:hidden;
+      background: linear-gradient(135deg, #ffe08b, #ffb4b4);
+    }
+    .thumb:after{
+      content:""; position:absolute; inset:-30%;
+      background: conic-gradient(from 210deg, rgba(255,255,255,0), rgba(255,255,255,.8), rgba(255,255,255,0));
+      transform: rotate(15deg);
+      opacity:.26;
+    }
+    .s-title{ font-weight:900; line-height:1.15; }
+    .s-sub{ color:#666; font-size:12.5px; margin-top:4px; }
+    .s-bottom{
+      padding:10px 12px 12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-top:auto;
+      border-top:1px solid #f0f0f0;
+    }
+    .price{ font-weight:1000; letter-spacing:.01em; }
+    .badge{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(227,30,36,.20);
+      background: rgba(227,30,36,.06);
+      color:#a90f14;
+      font-weight:900;
+      white-space:nowrap;
+    }
+    .buy{
+      border:none;
+      border-radius:10px;
+      padding:10px 12px;
+      font-weight:1000;
+      cursor:pointer;
+      background:#e31e24;
+      color:#fff;
+      transition: transform .18s var(--ease), filter .18s var(--ease);
+      white-space:nowrap;
+    }
+    .buy:hover{ transform:translateY(-1px); filter:brightness(1.02); }
+    .buy:active{ transform:translateY(0) scale(.99); }
+
+    .close{
+      margin-left:auto;
+      border:1px solid rgba(0,0,0,.12);
+      background:#fff;
+      color:#111;
+      border-radius:999px;
+      padding:10px 12px;
+      cursor:pointer;
+    }
+
+    /* Reveal */
+    .reveal{ opacity:0; transform:translateY(10px); }
+    .reveal.in{ opacity:1; transform:translateY(0); transition: opacity .65s var(--ease), transform .65s var(--ease); }
+
+    @media (max-width: 980px){
+      .start{ grid-template-columns:1fr; }
+      .game{ grid-template-columns:1fr; }
+      .entry{ grid-template-columns: 88px 1fr; }
+      .s-card{ grid-column: span 12; }
+      .city-grid{ grid-template-columns:1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .btn,.choice,.city{ transition:none !important; }
+      .reveal{ opacity:1; transform:none; }
+    }
   </style>
 </head>
+
 <body>
-  <header style="position:sticky;top:0;background:rgba(11,12,16,.92);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.04);z-index:40;">
-    <div style="max-width:var(--max);margin:0 auto;padding:12px;display:flex;gap:12px;align-items:center;justify-content:space-between;">
-      <div style="display:flex;gap:12px;align-items:center;">
-        <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#d7b86a,#c86a4a)"></div>
-        <div>
-          <div style="font-weight:800;font-family:'Fraunces',serif;">TEK AİLESİ v3</div>
-          <div class="muted">Yaşam Simülasyonu — Banka, Malvarlığı, Soy Ağacı</div>
+  <div class="bg" aria-hidden="true"></div>
+  <div class="topo" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <div class="app">
+    <header aria-label="KDR LİFE üst bar">
+      <div class="header-inner">
+        <div class="brand">
+          <div class="mark" aria-hidden="true"></div>
+          <div>
+            <h1>KDR LİFE</h1>
+            <p>Karar • Ekonomi • NPC • Sahibinden Pazarı • Aile Soy Ağacı</p>
+          </div>
+        </div>
+
+        <div class="hud" aria-label="Oyun bilgileri">
+          <div class="pill"><strong>İSİM</strong> <span id="hudName">—</span></div>
+          <div class="pill"><strong>ŞEHİR</strong> <span id="hudCity">—</span></div>
+          <div class="pill"><strong>NAKİT</strong> <span id="hudCash" style="color:var(--gold);font-weight:900;">₺ 0</span></div>
+          <div class="pill"><strong>İTİBAR</strong> <span id="hudRep">0</span></div>
+          <div class="pill"><strong>RİSK</strong> <span id="hudRisk">0</span></div>
+
+          <button class="btn" id="btnSave" type="button">💾 Kaydet</button>
+          <button class="btn" id="btnLoad" type="button">📤 Yükle</button>
+          <button class="btn danger" id="btnReset" type="button">🧹 Sıfırla</button>
         </div>
       </div>
+    </header>
 
-      <div style="display:flex;gap:10px;align-items:center;">
-        <div class="pill"><strong>NAKİT</strong> <span id="money" style="color:var(--gold);font-weight:800;">₺ 125.000</span></div>
-        <div class="pill"><strong>BTC</strong> <span id="btcDisplay">₿ 0.42 (₺2.850.000)</span></div>
-        <div class="pill"><strong>BANKA</strong> <span id="bankBalance" style="color:var(--ice);font-weight:800;">₺ 0</span></div>
-        <button class="btn" id="btnOpenBank">🏦 Banka</button>
-        <button class="btn" id="btnAssets">📦 Malvarlığım</button>
-      </div>
-    </div>
-  </header>
+    <main>
+      <!-- START VIEW -->
+      <section class="view active" id="viewStart" aria-label="Başlangıç ekranı">
+        <div class="start">
+          <section class="panel reveal" aria-label="Başlangıç tanıtım">
+            <div class="panel-pad">
+              <h2 class="title">Hayatını seç. Soyunu kur. Şehrini yaz.</h2>
+              <p class="subtitle">
+                KDR LİFE’de başlangıç; ad-soyad, doğum yeri ve aile düzeniyle başlar.
+                Seçtiğin şehir hem <strong>fırsatları</strong> hem de <strong>risk profilini</strong> değiştirir.
+              </p>
 
-  <main style="max-width:var(--max);margin:20px auto;padding:0 16px 80px;">
-    <div class="grid" style="display:grid;grid-template-columns:1.4fr 1fr;gap:18px;align-items:start;">
+              <div class="divider"></div>
 
-      <!-- SOL: Hikaye + Choices -->
-      <section class="panel" aria-label="Hikaye">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div>
-            <h2 style="margin:0;font-family:'Fraunces',serif;">Mudanya — Kararlarınız</h2>
-            <div class="muted">Harita, banka, malvarlığı ve soy ağacı eklendi.</div>
-          </div>
-          <div>
-            <button class="btn primary" id="btnNextMonth">⏭️ Ayı Bitir</button>
-          </div>
-        </div>
+              <form class="form" id="startForm">
+                <div class="field">
+                  <div class="label">Ad</div>
+                  <input class="control" id="firstName" autocomplete="given-name" placeholder="Kadir" required />
+                </div>
 
-        <div style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap;">
-          <div class="panel soft" style="min-width:220px;">
-            <div style="font-size:13px;color:var(--muted)">Oyuncu</div>
-            <div style="font-weight:800;font-size:18px" id="playerFullName">Kadir Tek</div>
-            <div class="muted" id="statusValues">İtibar: 62 • Risk: 18 • Mafya: 42</div>
-          </div>
+                <div class="field">
+                  <div class="label">Soyad</div>
+                  <input class="control" id="lastName" autocomplete="family-name" placeholder="Tek" required />
+                </div>
 
-          <div class="panel soft" style="min-width:220px;">
-            <div class="muted">Banka</div>
-            <div style="font-weight:800" id="bankSummary">Hesap: ₺0 • Kredi: ₺0</div>
-            <div class="muted" style="font-size:12px;margin-top:6px;">Kredi faizleri aylık uygulanır.</div>
-          </div>
+                <div class="field" aria-label="Şehir seçimi">
+                  <div class="label">Doğduğun şehir (Siyah/Beyaz seçim)</div>
+                  <div class="city-grid" id="cityGrid">
+                    <!-- injected -->
+                  </div>
+                  <input type="hidden" id="birthCity" required />
+                </div>
 
-          <div class="panel soft" style="min-width:220px;">
-            <div class="muted">Malvarlığı</div>
-            <div style="font-weight:800" id="assetCount">0 eşya</div>
-            <div class="muted" style="font-size:12px;margin-top:6px;">İlanlardan aldıklarını burada yönetebilirsin.</div>
-          </div>
-        </div>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;">
+                  <button class="btn primary" type="submit">▶ Oyunu Başlat</button>
+                  <button class="btn" id="btnStartLoad" type="button">📤 Kaydı Yükle</button>
+                </div>
 
-        <div style="margin-top:12px;">
-          <div class="log" id="log" role="log" aria-live="polite"></div>
-        </div>
+                <p style="margin:6px 0 0;color:var(--muted);font-size:12.5px;line-height:1.55;">
+                  Kayıt sistemi tarayıcıda saklanır (localStorage). Tek dosya prototip.
+                </p>
+              </form>
+            </div>
+          </section>
 
-        <div style="margin-top:12px;">
-          <div id="choicesContainer"></div>
+          <aside class="panel soft reveal" aria-label="Sistem özetleri">
+            <div class="panel-pad">
+              <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap;">
+                <h3 style="margin:0;font-family:'Fraunces',serif;font-size:22px;">Başlangıç Özeti</h3>
+                <span class="pill" style="background:rgba(255,255,255,.03);"><strong>SÜRÜM</strong> v1</span>
+              </div>
+
+              <div class="divider"></div>
+
+              <div style="display:grid;gap:10px;">
+                <div class="stat">
+                  <div class="k">Kaydet / Yükle</div>
+                  <div class="v" style="font-size:14px;">
+                    Tek slot: <strong>kdr_life_save_v1</strong>
+                  </div>
+                </div>
+
+                <div class="stat">
+                  <div class="k">Pazar</div>
+                  <div class="v" style="font-size:14px;">
+                    Ev • Araba • Silah — “Sahibinden” modal.
+                  </div>
+                </div>
+
+                <div class="stat">
+                  <div class="k">NPC</div>
+                  <div class="v" style="font-size:14px;">
+                    Sohbet • İlişki • Evlilik (demo).
+                  </div>
+                </div>
+
+                <div class="stat">
+                  <div class="k">Aile Soy Ağacı</div>
+                  <div class="v" style="font-size:14px;">
+                    Büyükten küçüğe yaş sıralı.
+                  </div>
+                </div>
+
+                <button class="btn" type="button" id="btnDemoSeed">⚙️ Demo Doldur</button>
+              </div>
+
+              <div class="divider"></div>
+              <div style="color:var(--muted);font-size:12.5px;line-height:1.55;">
+                İstersen bir sonraki adımda: şehir bazlı farklı olay zincirleri, daha gelişmiş NPC diyalog ağaçları ve envanter/ev/araç yönetimi eklenir.
+              </div>
+            </div>
+          </aside>
         </div>
       </section>
 
-      <!-- SAĞ: Harita + NPC + Soy Ağacı -->
-      <aside style="display:flex;flex-direction:column;gap:14px;">
-        <section class="panel map-wrap" aria-label="Harita">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <h3 style="margin:0;font-family:'Fraunces',serif;">Harita — Mudanya</h3>
-            <div class="muted">Tıklayarak etkileş</div>
-          </div>
-
-          <svg id="mapSvg" viewBox="0 0 820 360" style="width:100%;height:auto;margin-top:10px;border-radius:10px;background:linear-gradient(180deg,#071226,#08121a);">
-            <defs>
-              <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-            </defs>
-
-            <!-- sea/land simplified -->
-            <rect x="0" y="0" width="820" height="360" fill="transparent"></rect>
-
-            <!-- roads -->
-            <path d="M70,250 C170,200 260,200 350,220 C470,245 560,170 720,185" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="3" stroke-linecap="round"/>
-            <path d="M120,70 C220,90 310,120 360,160 C410,200 520,210 650,140" fill="none" stroke="rgba(134,182,255,.04)" stroke-width="3" stroke-linecap="round"/>
-
-            <!-- POIs: market, docks, police, hospital, bank -->
-            <g class="poi" data-poi="market" transform="translate(185,210)">
-              <circle r="12" fill="#d7b86a" filter="url(#softGlow)"></circle>
-              <text x="36" y="6" fill="#e9e7df" font-size="14" font-weight="700">Pazar / Sahibinden</text>
-            </g>
-
-            <g class="poi" data-poi="docks" transform="translate(560,250)">
-              <circle r="12" fill="#6ed6b7" filter="url(#softGlow)"></circle>
-              <text x="36" y="6" fill="#e9e7df" font-size="14" font-weight="700">İskele (Kaçakçılık)</text>
-            </g>
-
-            <g class="poi" data-poi="police" transform="translate(650,150)">
-              <circle r="12" fill="#86b6ff" filter="url(#softGlow)"></circle>
-              <text x="36" y="6" fill="#e9e7df" font-size="14" font-weight="700">Karakol</text>
-            </g>
-
-            <g class="poi" data-poi="hospital" transform="translate(220,120)">
-              <circle r="12" fill="#c86a4a" filter="url(#softGlow)"></circle>
-              <text x="36" y="6" fill="#e9e7df" font-size="14" font-weight="700">Hastane</text>
-            </g>
-
-            <g class="poi" data-poi="bank" transform="translate(420,90)">
-              <rect x="-12" y="-12" width="24" height="24" rx="6" fill="#ffd24a" filter="url(#softGlow)"></rect>
-              <text x="36" y="6" fill="#e9e7df" font-size="14" font-weight="700">Banka</text>
-            </g>
-          </svg>
-
-          <div style="display:flex;gap:8px;margin-top:10px;">
-            <button class="btn" id="btnGoMarket">Pazar</button>
-            <button class="btn" id="btnGoDocks">İskele</button>
-            <button class="btn" id="btnGoBank">Banka</button>
-          </div>
-        </section>
-
-        <section class="panel soft" aria-label="NPC">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <h4 style="margin:0">NPC Ağı</h4>
-            <button class="btn" id="btnMeet">🤝 Tanış</button>
-          </div>
-          <div id="npcList" style="margin-top:10px;display:grid;gap:8px;"></div>
-        </section>
-
-        <section class="panel soft" aria-label="Soy Ağacı">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <h4 style="margin:0">Soy Ağacı</h4>
-            <div style="display:flex;gap:8px;">
-              <button class="btn" id="btnAddRelative">➕ Ekle</button>
-              <button class="btn" id="btnExportTree">⤓ Kaydet</button>
+      <!-- GAME VIEW -->
+      <section class="view" id="viewGame" aria-label="Oyun ekranı">
+        <div class="game">
+          <!-- Left: story/log/choices -->
+          <section class="panel reveal" aria-label="Hikâye paneli">
+            <div style="padding:18px;border-bottom:1px solid var(--line2);display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;">
+              <div>
+                <h2 id="sceneTitle" style="margin:0;font-family:'Fraunces',serif;font-size:26px;">Başlangıç</h2>
+                <p id="sceneDesc" style="margin:6px 0 0;color:var(--muted);max-width:70ch;">
+                  Şehrin ritmini çöz. İtibar ve risk dengesini kur.
+                </p>
+              </div>
+              <div class="pill" style="background:rgba(255,255,255,.03);">
+                <strong>TARİH</strong> <span id="dateDisplay">2026 • 4. Ay</span>
+              </div>
             </div>
-          </div>
 
-          <div style="margin-top:10px;">
-            <div class="family-tree" id="familyTree"></div>
-          </div>
-        </section>
-      </aside>
-    </div>
-  </main>
+            <div style="padding:18px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;">
+                <div>
+                  <div style="font-size:22px;font-weight:1000;" id="playerFullName">—</div>
+                  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
+                    <span class="pill"><strong>YAŞ</strong> <span id="age">18</span></span>
+                    <span class="pill"><strong>DURUM</strong> <span id="status">—</span></span>
+                    <span class="pill"><strong>EŞ</strong> <span id="spouse">Yok</span></span>
+                  </div>
+                </div>
 
-  <!-- MODALS: Banka, Assets, Market (kısaltılmış), Asset detay -->
-  <div class="modal" id="bankModal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Banka">
-    <div class="modal-box">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <h3 style="margin:0">Banka — Hesap ve Kredi</h3>
-        <button class="btn" data-close="bankModal">✕</button>
-      </div>
+                <div style="min-width:min(360px,100%);">
+                  <div style="color:var(--muted);font-size:13px;">İtibar / Risk</div>
+                  <div style="height:12px;background:rgba(255,255,255,.10);border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.06);margin-top:8px;">
+                    <div id="repBar" style="height:100%;width:50%;background:linear-gradient(90deg,var(--jade),var(--gold));"></div>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;gap:10px;margin-top:8px;font-size:13px;">
+                    <span id="repText">İtibar: 0</span>
+                    <span id="riskText">Risk: 0</span>
+                  </div>
+                </div>
+              </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
-        <div class="panel soft">
-          <div class="muted">Hesap Bakiyesi</div>
-          <div style="font-weight:800;font-size:18px" id="bankBalanceBig">₺ 0</div>
-          <div style="margin-top:8px;display:flex;gap:8px;">
-            <input id="bankAmount" placeholder="Tutar (₺)" inputmode="numeric" />
-            <button class="btn" id="btnDeposit">Yatır</button>
-            <button class="btn" id="btnWithdraw">Çek</button>
-          </div>
-          <div class="muted" style="margin-top:8px;">Hesap üzerinden para yatırma/çekme yapabilirsiniz.</div>
-        </div>
+              <div class="divider"></div>
 
-        <div class="panel soft">
-          <div class="muted">Kredi</div>
-          <div style="font-weight:800;font-size:18px" id="loanSummary">Kredi: ₺0 • Aylık Faiz: %1.8</div>
-          <div style="margin-top:8px;display:grid;gap:8px;">
-            <input id="loanAmount" placeholder="Kredi miktarı (₺)" inputmode="numeric" />
-            <select id="loanTerm">
-              <option value="6">6 ay</option>
-              <option value="12">12 ay</option>
-              <option value="24">24 ay</option>
-            </select>
-            <div style="display:flex;gap:8px;">
-              <button class="btn primary" id="btnTakeLoan">Kredi Al</button>
-              <button class="btn" id="btnRepayLoan">Kredi Öde</button>
+              <div class="log" id="log" role="log" aria-live="polite" aria-relevant="additions"></div>
+
+              <div id="choices" style="margin-top:14px;display:grid;gap:10px;"></div>
+
+              <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
+                <button class="btn" id="btnMarket" type="button">🛒 Sahibinden Pazarı</button>
+                <button class="btn primary" id="btnNextMonth" type="button">⏭️ Ayı Bitir</button>
+              </div>
             </div>
+          </section>
+
+          <!-- Right: economy + npc chat + family tree -->
+          <aside style="display:flex;flex-direction:column;gap:18px;">
+            <section class="panel soft reveal" aria-label="Ekonomi">
+              <div class="panel-pad">
+                <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap;">
+                  <h3 style="margin:0;font-family:'Fraunces',serif;font-size:22px;">Ekonomi</h3>
+                  <span class="pill" style="background:rgba(255,255,255,.03);"><strong>ŞEHİR</strong> <span id="cityBadge">—</span></span>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
+                  <div class="stat"><div class="k">Nakit</div><div class="v" id="cash">₺ 0</div></div>
+                  <div class="stat"><div class="k">Borç</div><div class="v" id="debt">₺ 0</div></div>
+                  <div class="stat"><div class="k">Aylık Gelir</div><div class="v" id="income">₺ 0</div></div>
+                  <div class="stat"><div class="k">Aylık Gider</div><div class="v" id="expense">₺ 0</div></div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                  <button class="btn" id="btnWork" type="button">🧰 İşe Git</button>
+                  <button class="btn danger" id="btnShady" type="button">🕶️ Kaçak İş</button>
+                </div>
+
+                <p style="margin:12px 0 0;color:var(--muted);font-size:12.5px;line-height:1.55;">
+                  Kaçak iş: yüksek kazanç, yüksek risk. Şehir etkisi: bazı şehirler daha “sıcak”.
+                </p>
+              </div>
+            </section>
+
+            <section class="panel soft reveal" aria-label="NPC sohbet">
+              <div class="panel-pad">
+                <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap;">
+                  <h3 style="margin:0;font-family:'Fraunces',serif;font-size:22px;">NPC Sohbet</h3>
+                  <select class="control" id="npcSelect" aria-label="NPC seç" style="padding:10px 12px;border-radius:999px;">
+                    <!-- injected -->
+                  </select>
+                </div>
+
+                <div class="chat" style="margin-top:12px;">
+                  <div class="chatbox" id="chatbox" aria-label="Sohbet kutusu"></div>
+                  <div class="chat-controls">
+                    <input class="control" id="chatInput" placeholder="Mesaj yaz..." />
+                    <button class="btn primary" id="btnSend" type="button">Gönder</button>
+                    <button class="btn" id="btnFlirt" type="button">💬 Yakınlaş</button>
+                    <button class="btn" id="btnMarry" type="button">💍 Evlen</button>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:12.5px;">
+                    <span id="relText">İlişki: 0</span>
+                    <span id="npcMood">Mod: Nötr</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel soft reveal" aria-label="Aile soy ağacı">
+              <div class="panel-pad">
+                <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap;">
+                  <h3 style="margin:0;font-family:'Fraunces',serif;font-size:22px;">Soy Ağacı</h3>
+                  <span class="pill" style="background:rgba(255,255,255,.03);"><strong>SOYAD</strong> <span id="lastNameBadge">—</span></span>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="tree" id="familyTree"></div>
+              </div>
+            </section>
+          </aside>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Market Modal -->
+  <div class="modal" id="marketModal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Sahibinden pazarı">
+    <div class="modal-content">
+      <div class="s-header">
+        <div class="s-logo" aria-label="Sahibinden başlığı">
+          <div class="s-mark" aria-hidden="true"></div>
+          <div>
+            <div>SAHİBİNDEN</div>
+            <div style="font-size:12px;color:#666;letter-spacing:0;font-weight:900;">KDR LİFE Pazarı</div>
           </div>
-          <div class="muted" style="margin-top:8px;">Kredi aylık faizle artar; aylık ödeme manuel veya otomatik yapılabilir.</div>
+        </div>
+
+        <div class="s-search" role="search">
+          <span aria-hidden="true">🔎</span>
+          <input id="marketSearch" placeholder="İlan ara: ev, araba, tabanca..." />
+        </div>
+
+        <button class="s-tab active" type="button" data-tab="all">Tümü</button>
+        <button class="s-tab" type="button" data-tab="house">Ev</button>
+        <button class="s-tab" type="button" data-tab="car">Araba</button>
+        <button class="s-tab" type="button" data-tab="weapon">Silah</button>
+
+        <button class="close" type="button" data-close="marketModal" aria-label="Kapat">✕</button>
+      </div>
+
+      <div class="s-filters">
+        <div class="s-pill">
+          <strong>Şehir</strong>
+          <select id="marketCity">
+            <option value="Şehirle aynı">Şehirle aynı</option>
+            <option value="İstanbul">İstanbul</option>
+            <option value="Ankara">Ankara</option>
+            <option value="İzmir">İzmir</option>
+            <option value="Bursa">Bursa</option>
+            <option value="Antalya">Antalya</option>
+          </select>
+        </div>
+        <div class="s-pill">
+          <strong>Sırala</strong>
+          <select id="marketSort">
+            <option value="new">Yeni</option>
+            <option value="cheap">Ucuz → Pahalı</option>
+            <option value="exp">Pahalı → Ucuz</option>
+          </select>
+        </div>
+
+        <div style="margin-left:auto;color:#666;font-size:12.5px;font-weight:900;">
+          Bütçe: <span id="marketBudget">₺ 0</span>
         </div>
       </div>
 
-      <div style="margin-top:12px;">
-        <div class="muted">Kredi Geçmişi / Durum</div>
-        <table style="margin-top:8px;">
-          <thead><tr><th>Tutar</th><th>Kalan</th><th>Aylar</th><th>Faiz</th></tr></thead>
-          <tbody id="loanTable"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal" id="assetsModal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Malvarlığım">
-    <div class="modal-box">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <h3 style="margin:0">Malvarlığım</h3>
-        <button class="btn" data-close="assetsModal">✕</button>
-      </div>
-
-      <div style="margin-top:12px;">
-        <div class="muted">Sahip olduğun eşyalar</div>
-        <div id="assetsList" style="margin-top:10px;display:grid;gap:8px;"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Market modal (kısaltılmış) -->
-  <div class="modal" id="marketModal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Pazar">
-    <div class="modal-box">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <h3 style="margin:0">Sahibinden Pazarı</h3>
-        <button class="btn" data-close="marketModal">✕</button>
-      </div>
-
-      <div style="margin-top:12px;">
-        <div style="display:flex;gap:8px;margin-bottom:8px;">
-          <input id="marketSearch" placeholder="Ara..." />
-          <select id="marketFilter"><option value="all">Tümü</option><option value="legal">Yasal</option><option value="shady">Kaçak</option></select>
-        </div>
-
-        <div class="listing-grid" id="listingGrid"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Add relative modal -->
-  <div class="modal" id="addRelativeModal" aria-hidden="true">
-    <div class="modal-box">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <h3 style="margin:0">Soy Ağacı — Yeni Kişi Ekle</h3>
-        <button class="btn" data-close="addRelativeModal">✕</button>
-      </div>
-
-      <div style="margin-top:12px;display:grid;gap:8px;">
-        <input id="relName" placeholder="İsim" />
-        <input id="relRelation" placeholder="İlişki (ör. Baba, Anne, Kardeş)" />
-        <input id="relAge" placeholder="Yaş" inputmode="numeric" />
-        <div style="display:flex;gap:8px;">
-          <button class="btn primary" id="btnSaveRelative">Ekle</button>
-          <button class="btn" data-close="addRelativeModal">İptal</button>
-        </div>
-      </div>
+      <div class="s-grid" id="listingGrid" aria-label="İlanlar listesi"></div>
     </div>
   </div>
 
   <script>
-    /* ========== Utilities ========== */
+    /* ================== Utilities ================== */
     const $ = (s, r=document) => r.querySelector(s);
     const $$ = (s, r=document) => [...r.querySelectorAll(s)];
-    const fmtTRY = n => "₺ " + Math.round(n).toLocaleString("tr-TR");
-    const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
-    const rand = (a,b)=>Math.random()*(b-a)+a;
-    const STORAGE_KEY = "tekAilesi_v3_full";
 
-    /* ========== State (geliştirilmiş) ========== */
-    const defaultState = () => ({
-      version:4,
-      year:2026, month:4,
-      player:{ name:"Kadir Tek", age:18, country:"Türkiye", status:"Denge arayışı", rep:62, risk:18, mafia:42, health:86, jail:0 },
-      economy:{ cash:125000, debt:1250000, income:210000, expense:165000 },
-      crypto:{ btc:0.42, price:6785000, vol:6.2, history:[] },
-      bank:{ balance:0, loans:[] }, // loans: [{id, principal, remaining, monthsLeft, monthlyInterest}]
-      npc:[
-        { id:"cem", name:"Cem Kalkan", role:"Galerici", tie:34, heat:18 },
-        { id:"sibel", name:"Sibel Arı", role:"Emlakçı", tie:22, heat:10 },
-        { id:"baran", name:"Baran Gür", role:"İskele bağlantısı", tie:14, heat:42 }
-      ],
-      inventory:[], // {id,title,price,type,rented:false,rentIncome:0,rentMonthsLeft:0}
-      log:[ {t:"Başlangıç", m:"Mudanya’da yeni bir düzen kuruyorsun. Banka ve malvarlığı eklendi."} ],
-      family: [ { id:"me", name:"Kadir Tek", relation:"Ben", age:18 } ],
-      _marketTab:"all", _marketQuery:"", _marketCity:"Mudanya", _marketSort:"new"
-    });
+    const STORAGE_KEY = "kdr_life_save_v1";
 
-    function loadState(){
-      try{
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if(!raw) return null;
-        const parsed = JSON.parse(raw);
-        // basic validation/upgrade
-        if(!parsed.version) parsed.version = 1;
-        return parsed;
-      }catch(e){
-        console.warn("load failed", e);
-        return null;
-      }
+    const fmtTRY = (n) => "₺ " + Math.round(n).toLocaleString("tr-TR");
+    const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+    const rand = (min, max) => Math.random() * (max - min) + min;
+
+    function escapeHTML(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
     }
 
-    let state = loadState() || defaultState();
-
-    /* ========== Market data ========== */
-    const marketData = [
-      { id:"scooter", title:"Elektrikli Scooter", sub:"Mudanya • 2024 • Temiz", price:32000, tag:"Yasal", type:"legal" },
-      { id:"phone", title:"Telefon (2. El)", sub:"Bursa • Kutulu • Garanti bitti", price:28500, tag:"Yasal", type:"legal" },
-      { id:"laptop", title:"Laptop (İş için)", sub:"İstanbul • SSD • 16GB RAM", price:54000, tag:"Yasal", type:"legal" },
-      { id:"gold", title:"Gram Altın (Hızlı Bozdur)", sub:"Mudanya • Kuyumcu bağlantısı", price:41000, tag:"Yasal", type:"legal" },
-      { id:"fake", title:"“Gümrük Fazlası” Koli", sub:"İskele • Teslimat gece", price:67000, tag:"Kaçak", type:"shady" },
-      { id:"car", title:"Araba (Masraflı ama prestij)", sub:"Bursa • 2012 • Pazarlık var", price:215000, tag:"Yasal", type:"legal" },
-      { id:"route", title:"Sevkiyat Rotası Bilgisi", sub:"İskele • 1 gece • riskli", price:89000, tag:"Kaçak", type:"shady" },
-      { id:"shop", title:"Küçük Dükkan Devren", sub:"Mudanya • Sahile yakın", price:295000, tag:"Yasal", type:"legal" }
+    /* ================== Data ================== */
+    const cities = [
+      { id:"istanbul", name:"İstanbul", meta:"Fırsat yüksek • Risk orta" },
+      { id:"ankara", name:"Ankara", meta:"Düzenli • Risk düşük" },
+      { id:"izmir", name:"İzmir", meta:"Sosyal • Risk orta" },
+      { id:"bursa", name:"Bursa", meta:"Sanayi • Risk orta" },
+      { id:"antalya", name:"Antalya", meta:"Turizm • Risk dalgalı" },
+      { id:"trabzon", name:"Trabzon", meta:"Ağ güçlü • Risk değişken" }
     ];
 
-    /* ========== Core mechanics ========== */
+    // Expanded market: houses, cars, weapons
+    const marketData = [
+      { id:"h1", type:"house", title:"Şehir Merkezi 2+1 Daire", sub:"Asansör • Yeni bina • Ulaşım yakın", price: 1650000, tag:"Ev" },
+      { id:"h2", type:"house", title:"Sahil Hattı 3+1", sub:"Manzara • Geniş balkon • Site", price: 3450000, tag:"Ev" },
+      { id:"h3", type:"house", title:"Müstakil Ev", sub:"Bahçe • Otopark • Sessiz sokak", price: 2850000, tag:"Ev" },
+
+      { id:"c1", type:"car", title:"2016 Sedan", sub:"Bakımlı • Düşük km • Otomatik", price: 780000, tag:"Araba" },
+      { id:"c2", type:"car", title:"2012 Hatchback", sub:"Ekonomik • Şehir içi ideal", price: 520000, tag:"Araba" },
+      { id:"c3", type:"car", title:"2018 SUV", sub:"Güçlü • Aile aracı • Konfor", price: 1320000, tag:"Araba" },
+
+      { id:"w1", type:"weapon", title:"Tabanca (Ruhsatlı)", sub:"Kişisel güvenlik • Kayıtlı", price: 95000, tag:"Silah" },
+      { id:"w2", type:"weapon", title:"Pompalı (Av)", sub:"Avcılık • Kılıf dahil", price: 140000, tag:"Silah" },
+      { id:"w3", type:"weapon", title:"Kaçak Seri No Yok", sub:"Gece teslim • Riskli", price: 65000, tag:"Silah" }
+    ];
+
+    const baseNPCs = [
+      { id:"sibel", name:"Sibel Arı", role:"Emlakçı", age: 32, romance:true },
+      { id:"cem", name:"Cem Kalkan", role:"Galerici", age: 38, romance:false },
+      { id:"baran", name:"Baran Gür", role:"İskele bağlantısı", age: 29, romance:false },
+      { id:"zeynep", name:"Zeynep Kara", role:"Kafe işletmecisi", age: 27, romance:true }
+    ];
+
+    // Family template (player inserted later)
+    const familyTemplate = [
+      { id:"gf", relation:"Büyükanne", name:"Fatma", age: 75, job:"Ev Hanımı" },
+      { id:"gf2", relation:"Büyükbaba", name:"Ahmet", age: 78, job:"Emekli" },
+      { id:"mom", relation:"Anne", name:"Ayşe", age: 50, job:"Öğretmen" },
+      { id:"dad", relation:"Baba", name:"Mehmet", age: 52, job:"Esnaf" },
+      { id:"uncle", relation:"Amca", name:"Ali", age: 48, job:"Mühendis" },
+      { id:"sis", relation:"Kardeş", name:"Elif", age: 16, job:"Öğrenci" },
+      { id:"player", relation:"Sen", name:"", age: 18, job:"—" }
+    ];
+
+    /* ================== State ================== */
+    const defaultState = () => ({
+      meta:{ game:"KDR LİFE", version:1, updatedAt: Date.now() },
+      world:{ year:2026, month:4, city:"" },
+      player:{
+        firstName:"", lastName:"", age:18,
+        status:"Başlangıç", rep:52, risk:16,
+        spouseId:null
+      },
+      economy:{ cash:125000, debt:1250000, income:210000, expense:165000, interest:0.018 },
+      inventory:[],
+      log:[
+        { t:"Başlangıç", m:"Bir şehir seçtin. Şimdi adını yazıp soyunu kuruyorsun. İlk kararlar her şeyi belirler." }
+      ],
+      npc: baseNPCs.map(n => ({
+        ...n,
+        relation: 0,          // 0..100
+        married:false,
+        mood: "Nötr",
+        chat: [
+          { from:"npc", text:"Selam. Burada herkes birbirini tanır. Ne arıyorsun?" }
+        ]
+      })),
+      family: JSON.parse(JSON.stringify(familyTemplate)),
+      ui:{
+        market:{ tab:"all", q:"", sort:"new", city:"Şehirle aynı" },
+        selectedNpcId:"sibel"
+      }
+    });
+
+    let state = defaultState();
+
+    /* ================== Start Screen City Grid ================== */
+    function renderCityGrid(){
+      const grid = $("#cityGrid");
+      grid.innerHTML = "";
+      cities.forEach((c) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "city";
+        b.setAttribute("aria-pressed", "false");
+        b.innerHTML = `
+          <div class="sig" aria-hidden="true"></div>
+          <div class="name">${escapeHTML(c.name)}</div>
+          <div class="meta">${escapeHTML(c.meta)}</div>
+        `;
+        b.addEventListener("click", () => {
+          $$(".city", grid).forEach(x => x.setAttribute("aria-pressed","false"));
+          b.setAttribute("aria-pressed","true");
+          $("#birthCity").value = c.name;
+        });
+        grid.appendChild(b);
+      });
+    }
+
+    /* ================== View Switch ================== */
+    function showView(id){
+      $$(".view").forEach(v => v.classList.remove("active"));
+      $(id).classList.add("active");
+      // re-observe reveal elements
+      $$(".reveal").forEach(el => io.observe(el));
+    }
+
+    /* ================== Game Mechanics ================== */
+    function addLog(t, m){
+      state.log.push({ t, m });
+      if(state.log.length > 90) state.log.shift();
+      renderLog();
+    }
+
+    function cityModifiers(city){
+      // affects risk drift and shady reward
+      const map = {
+        "İstanbul": { riskAdd: 2, shadyMul: 1.15 },
+        "Ankara":   { riskAdd: -1, shadyMul: 0.95 },
+        "İzmir":    { riskAdd: 1, shadyMul: 1.05 },
+        "Bursa":    { riskAdd: 1, shadyMul: 1.08 },
+        "Antalya":  { riskAdd: 0, shadyMul: 1.10 },
+        "Trabzon":  { riskAdd: 1, shadyMul: 1.06 }
+      };
+      return map[city] || { riskAdd: 0, shadyMul: 1.0 };
+    }
+
+    function catchChance(){
+      // risk increases chance
+      const base = 0.08 + (state.player.risk/100) * 0.35;
+      const repEffect = (state.player.rep/100) * 0.06;
+      return clamp(base - repEffect, 0.05, 0.60);
+    }
     function chance(p){ return Math.random() < p; }
-    function catchChance(){ const base = 0.08 + (state.player.risk/100)*0.35; const repEffect = (state.player.rep/100)*0.08; return clamp(base - repEffect, 0.05, 0.60); }
 
     function nextMonth(){
-      state.month += 1;
-      if(state.month > 12){ state.month = 1; state.year += 1; state.player.age += 1; addLog("Yaş", "Bir yıl daha geçti."); }
+      state.world.month += 1;
+      if(state.world.month > 12){
+        state.world.month = 1;
+        state.world.year += 1;
+        state.player.age += 1;
+        addLog("Zaman", "Bir yıl daha geçti. Şehir değişmez; sen değişirsin.");
+      }
 
-      const jail = state.player.jail > 0;
-      const inc = jail ? state.economy.income * 0.2 : state.economy.income;
+      const inc = state.economy.income;
       const exp = state.economy.expense;
-
-      applyLoanInterest();
-      applyRents();
-
       state.economy.cash += (inc - exp);
 
-      const interest = state.economy.debt * 0.018;
+      const interest = state.economy.debt * state.economy.interest;
       state.economy.debt += interest;
 
-      const stress = (state.player.risk * 0.12) + (state.player.jail ? 12 : 0);
-      state.player.health = clamp(state.player.health - rand(0.8,2.0) - stress/50, 0, 100);
-
-      state.player.risk = clamp(state.player.risk - (jail ? 2 : 1), 0, 100);
-
-      updateBtcPrice();
+      // city risk drift
+      const mod = cityModifiers(state.world.city);
+      state.player.risk = clamp(state.player.risk + mod.riskAdd - 1, 0, 100);
 
       addLog("Ay Sonu", `Gelir: <strong>${fmtTRY(inc)}</strong> • Gider: <strong>${fmtTRY(exp)}</strong> • Faiz: <strong>${fmtTRY(interest)}</strong>.`);
-      if(state.economy.cash < 0){ addLog("Uyarı", "Nakit negatife düştü."); state.player.risk = clamp(state.player.risk + 6, 0, 100); }
+      if(state.economy.cash < 0){
+        addLog("Uyarı", "Nakit negatife düştü. Çevre bunu koklar.");
+        state.player.risk = clamp(state.player.risk + 6, 0, 100);
+      }
 
-      render();
-      saveState();
+      renderGame();
     }
 
-    function applyLoanInterest(){
-      state.bank.loans.forEach(loan=>{
-        const monthlyInterest = loan.monthlyInterest || 0.018;
-        const interestAmount = Math.round(loan.remaining * monthlyInterest);
-        loan.remaining += interestAmount;
-        loan.monthsLeft = Math.max(0, loan.monthsLeft - 1);
-        if(loan.monthsLeft === 0 && loan.remaining > 0){
-          addLog("Banka", `Kredi vadesi doldu: ${fmtTRY(loan.remaining)} ödenmeyi bekliyor.`);
-        }
-      });
-      state.bank.loans = state.bank.loans.filter(l => l.remaining > 0);
+    function work(){
+      const gain = 24000 + Math.round(state.player.rep * 220);
+      state.economy.cash += gain;
+      state.player.rep = clamp(state.player.rep + 1, 0, 100);
+      addLog("Günlük", `İşe gittin. Kazanç: <strong>${fmtTRY(gain)}</strong>.`);
+      renderGame();
     }
 
-    function applyRents(){
-      state.inventory.forEach(item=>{
-        if(item.rented && item.rentMonthsLeft > 0){
-          state.economy.cash += item.rentIncome;
-          item.rentMonthsLeft = Math.max(0, item.rentMonthsLeft - 1);
-          addLog("Kira", `${item.title} için kira alındı: ${fmtTRY(item.rentIncome)}.`);
-          if(item.rentMonthsLeft === 0){
-            item.rented = false;
-            addLog("Kira", `${item.title} kira süresi bitti.`);
+    function shadyJob(){
+      const mod = cityModifiers(state.world.city);
+      const gain = Math.round((45000 + state.player.risk * 650) * mod.shadyMul);
+      const caught = chance(catchChance() + 0.08);
+
+      if(caught){
+        addLog("Karakol", "Kaçak işte yakalandın. Dosya kabardı.");
+        state.player.risk = clamp(state.player.risk + 16, 0, 100);
+        state.player.rep = clamp(state.player.rep - 7, 0, 100);
+      }else{
+        addLog("Kaçak", `Hızlı para. Kazanç: <strong>${fmtTRY(gain)}</strong>.`);
+        state.economy.cash += gain;
+        state.player.risk = clamp(state.player.risk + 8, 0, 100);
+      }
+      renderGame();
+    }
+
+    function buildChoices(){
+      return [
+        {
+          title:"Aileyle konuş (baskıyı azalt)",
+          meta:"İtibar + • Risk -",
+          delta:"İtibar +6, Risk -3",
+          apply(){
+            addLog("Aile", "Daha sakin konuştun. Evde tansiyon düştü.");
+            state.player.rep = clamp(state.player.rep + 6, 0, 100);
+            state.player.risk = clamp(state.player.risk - 3, 0, 100);
+            state.player.status = "Denge arıyor";
+          }
+        },
+        {
+          title:"Pazardan temiz al-sat yap",
+          meta:"Nakit + • Risk -",
+          delta:"₺+35k",
+          apply(){
+            addLog("Pazar", "Küçük ama temiz satışlar… nefes gibi.");
+            state.economy.cash += 35000;
+            state.player.risk = clamp(state.player.risk - 2, 0, 100);
+          }
+        },
+        {
+          title:"Şehirde görünür ol (network)",
+          meta:"İtibar + • Risk +",
+          delta:"İtibar +4, Risk +2",
+          apply(){
+            addLog("Çevre", "İnsanlar seni tanımaya başladı. Bu hem iyi hem tehlikeli.");
+            state.player.rep = clamp(state.player.rep + 4, 0, 100);
+            state.player.risk = clamp(state.player.risk + 2, 0, 100);
           }
         }
-      });
-    }
-
-    function updateBtcPrice(){
-      const vol = clamp(4.5 + (state.player.risk/100)*6.5, 4.5, 12.0);
-      state.crypto.vol = Math.round(vol*10)/10;
-      const drift = 0.006;
-      const shock = rand(-1,1)*(vol/100);
-      const factor = 1 + drift + shock;
-      state.crypto.price = Math.max(900000, Math.round(state.crypto.price * factor));
-      if(!state.crypto.history || state.crypto.history.length===0) state.crypto.history = generateHistory(state.crypto.price);
-      else { state.crypto.history.push(state.crypto.price); if(state.crypto.history.length>12) state.crypto.history.shift(); }
-    }
-
-    function generateHistory(last){
-      const arr=[]; let p=last;
-      for(let i=0;i<12;i++){ const v=0.05; const f=1+0.004+rand(-1,1)*v; p=Math.max(900000,Math.round(p*f)); arr.push(p); }
-      return arr;
-    }
-
-    /* ========== Bank actions ========== */
-    function depositToBank(amount){
-      amount = Math.round(Number(amount)||0);
-      if(amount <= 0) { addLog("Banka", "Geçersiz tutar."); return; }
-      if(state.economy.cash < amount){ addLog("Banka", "Nakit yetersiz."); return; }
-      state.economy.cash -= amount;
-      state.bank.balance += amount;
-      addLog("Banka", `Hesaba yatırıldı: ${fmtTRY(amount)}.`);
-      render(); saveState();
-    }
-
-    function withdrawFromBank(amount){
-      amount = Math.round(Number(amount)||0);
-      if(amount <= 0) { addLog("Banka", "Geçersiz tutar."); return; }
-      if(state.bank.balance < amount){ addLog("Banka", "Banka bakiyesi yetersiz."); return; }
-      state.bank.balance -= amount;
-      state.economy.cash += amount;
-      addLog("Banka", `Hesaptan çekildi: ${fmtTRY(amount)}.`);
-      render(); saveState();
-    }
-
-    function takeLoan(amount, termMonths){
-      amount = Math.round(Number(amount)||0);
-      termMonths = Number(termMonths)||12;
-      if(amount <= 0){ addLog("Banka", "Geçersiz kredi miktarı."); return; }
-      const maxLoan = Math.max(50000, state.economy.income * 2);
-      if(amount > maxLoan){ addLog("Banka", "Talep edilen kredi limitin üzerinde."); return; }
-      const monthlyInterest = 0.018;
-      const loan = { id: "loan_"+Date.now(), principal: amount, remaining: amount, monthsLeft: termMonths, monthlyInterest };
-      state.bank.loans.push(loan);
-      state.economy.cash += amount;
-      addLog("Banka", `Kredi verildi: ${fmtTRY(amount)} • Vade: ${termMonths} ay • Aylık faiz: ${(monthlyInterest*100).toFixed(2)}%`);
-      render(); saveState();
-    }
-
-    function repayLoan(amount){
-      amount = Math.round(Number(amount)||0);
-      if(amount <= 0){ addLog("Banka", "Geçersiz tutar."); return; }
-      if(state.economy.cash < amount){ addLog("Banka", "Nakit yetersiz."); return; }
-      state.bank.loans.sort((a,b)=>a.monthsLeft - b.monthsLeft);
-      let remaining = amount;
-      for(const loan of state.bank.loans){
-        if(remaining <= 0) break;
-        const pay = Math.min(loan.remaining, remaining);
-        loan.remaining -= pay;
-        remaining -= pay;
-      }
-      const paid = amount - remaining;
-      state.economy.cash -= paid;
-      addLog("Banka", `Kredi ödemesi yapıldı: ${fmtTRY(paid)}.`);
-      state.bank.loans = state.bank.loans.filter(l => l.remaining > 0);
-      render(); saveState();
-    }
-
-    /* ========== Assets (malvarlığı) ========== */
-    function buyItemFromMarket(itemId){
-      const item = marketData.find(x=>x.id===itemId);
-      if(!item) return;
-      if(state.economy.cash < item.price){ addLog("Pazar", "Bütçe yetmedi."); return; }
-      state.economy.cash -= item.price;
-      const asset = { id: item.id + "_" + Date.now(), title: item.title, price: item.price, type: item.type, rented:false, rentIncome:0, rentMonthsLeft:0 };
-      state.inventory.push(asset);
-      addLog("Pazar", `Satın alındı: ${item.title} • ${fmtTRY(item.price)}`);
-      render(); saveState();
-    }
-
-    function sellAsset(assetId){
-      const idx = state.inventory.findIndex(a=>a.id===assetId);
-      if(idx === -1) return;
-      const a = state.inventory[idx];
-      const sellPrice = Math.round(a.price * 0.85);
-      state.economy.cash += sellPrice;
-      state.inventory.splice(idx,1);
-      addLog("Malvarlığı", `${a.title} satıldı: ${fmtTRY(sellPrice)}.`);
-      render(); saveState();
-    }
-
-    function rentOutAsset(assetId, months, monthlyIncome){
-      const a = state.inventory.find(x=>x.id===assetId);
-      if(!a) return;
-      if(a.rented){ addLog("Malvarlığı", `${a.title} zaten kirada.`); return; }
-      a.rented = true;
-      a.rentMonthsLeft = months;
-      a.rentIncome = monthlyIncome;
-      addLog("Malvarlığı", `${a.title} kiraya verildi: ${months} ay • Aylık ${fmtTRY(monthlyIncome)}.`);
-      render(); saveState();
-    }
-
-    /* ========== NPC & Choices ========== */
-    function buildChoices(){
-      const jail = state.player.jail > 0;
-      const base = [
-        { id:"study", title:"Aileyle konuş, baskıyı azalt", meta:"İtibar +6, Risk -3", delta:"", apply(){ addLog("Aile","Daha sakin konuştun."); state.player.rep = clamp(state.player.rep+6,0,100); state.player.risk = clamp(state.player.risk-3,0,100); } },
-        { id:"job", title:"Gündüz işe gir", meta:"+₺40k/ay", delta:"", apply(){ addLog("İş","Düzenli iş buldun."); state.economy.income += 40000; state.player.rep = clamp(state.player.rep+2,0,100); } },
-        { id:"dock", title:"İskelede kaçak iş", meta:"Risk yüksek", delta:"", apply(){ const caught = chance(catchChance()); if(caught){ addLog("Karakol","Yakalandın."); state.player.risk = clamp(state.player.risk+18,0,100); state.player.rep = clamp(state.player.rep-6,0,100); state.player.jail = Math.max(state.player.jail,1); } else { addLog("İskele","Başarılı sevkiyat."); state.economy.cash += 90000; state.player.risk = clamp(state.player.risk+10,0,100); state.player.mafia = clamp(state.player.mafia+6,0,100); } } },
-        { id:"sellStuff", title:"Eşyaları pazarda sat", meta:"₺+35k", delta:"", apply(){ addLog("Pazar","Eşyaları sattın."); state.economy.cash += 35000; state.player.rep = clamp(state.player.rep+3,0,100); state.player.risk = clamp(state.player.risk-2,0,100); } }
       ];
-      if(jail) return [{ id:"serve", title:"Hapis süresini geçir", meta:"Hapis -1", delta:"", apply(){ addLog("Hapis","Zaman geçiyor."); state.player.jail = Math.max(0,state.player.jail-1); state.player.risk = clamp(state.player.risk-4,0,100); state.player.rep = clamp(state.player.rep-1,0,100); } }];
-      return base;
     }
 
-    /* ========== NPC interactions ========== */
-    function renderNpc(){
-      const list = $("#npcList");
-      list.innerHTML = "";
-      state.npc.forEach(n=>{
-        const btn = document.createElement("button");
-        btn.className = "choice";
-        btn.innerHTML = `<div><div style="font-weight:800">${escapeHTML(n.name)}</div><div class="muted">${escapeHTML(n.role)}</div></div><div class="muted">Etkileşim</div>`;
-        btn.addEventListener("click", ()=> interactNpc(n.id));
-        list.appendChild(btn);
-      });
+    /* ================== Market ================== */
+    function openModal(id){
+      const m = document.getElementById(id);
+      if(!m) return;
+      m.setAttribute("aria-hidden","false");
+      document.body.style.overflow="hidden";
+      const focusable = m.querySelector("input,button,select,[tabindex]");
+      if(focusable) focusable.focus();
     }
-    function interactNpc(id){
-      const n = state.npc.find(x=>x.id===id); if(!n) return;
-      const r = Math.random();
-      if(r < 0.45){ n.tie = clamp(n.tie+6,0,100); state.player.rep = clamp(state.player.rep+2,0,100); addLog("NPC", `${n.name} ile bağ güçlendi.`); }
-      else if(r < 0.8){ n.heat = clamp(n.heat+7,0,100); state.player.risk = clamp(state.player.risk+4,0,100); addLog("NPC", `${n.name} daha görünür oldu.`); }
-      else { const cut = 65000 + Math.round(n.tie*500); if(state.economy.cash >= cut){ state.economy.cash -= cut; state.economy.debt = Math.max(0, state.economy.debt - cut*1.3); addLog("NPC", `${n.name} aracılığıyla borç kırdırdın: ${fmtTRY(cut)}.`); state.player.rep = clamp(state.player.rep+2,0,100); } else { addLog("NPC", `${n.name} teklif sundu ama nakit yok.`); } }
-      render(); saveState();
-    }
-
-    /* ========== Family (soy ağacı) ========== */
-    function renderFamily(){
-      const wrap = $("#familyTree");
-      wrap.innerHTML = "";
-      state.family.forEach(p=>{
-        const el = document.createElement("div");
-        el.className = "family-node";
-        el.innerHTML = `<div style="font-weight:800">${escapeHTML(p.name)}</div><div class="muted">${escapeHTML(p.relation)} • ${p.age} yaş</div><div style="margin-top:8px;display:flex;gap:6px;"><button class="btn" data-id="${p.id}" data-action="edit">✎</button><button class="btn" data-id="${p.id}" data-action="del">🗑</button></div>`;
-        wrap.appendChild(el);
-      });
-      $$("[data-action='del']").forEach(b=>b.addEventListener("click", e=>{
-        const id = e.currentTarget.getAttribute("data-id");
-        state.family = state.family.filter(x=>x.id!==id);
-        addLog("Soy Ağacı", "Kişi silindi.");
-        render(); saveState();
-      }));
-    }
-
-    /* ========== Rendering genel ========== */
-    function render(){
-      $("#money").textContent = fmtTRY(state.economy.cash);
-      $("#btcDisplay").textContent = `${state.crypto.btc.toFixed(5)} (${fmtTRY(state.crypto.btc * state.crypto.price)})`;
-      $("#bankBalance").textContent = fmtTRY(state.bank.balance);
-      $("#bankBalanceBig").textContent = fmtTRY(state.bank.balance);
-      $("#bankSummary").textContent = `Hesap: ${fmtTRY(state.bank.balance)} • Kredi: ${fmtTRY(totalLoanRemaining())}`;
-      $("#assetCount").textContent = `${state.inventory.length} eşya`;
-      $("#statusValues").textContent = `İtibar: ${state.player.rep} • Risk: ${state.player.risk} • Mafya: ${state.player.mafia} • Sağlık: ${Math.round(state.player.health)}${state.player.jail>0?` • Hapis: ${state.player.jail} ay`:""}`;
-
-      renderLog();
-      renderChoices();
-      renderNpc();
-      renderAssetsList();
-      renderMarket();
-      renderFamily();
-      renderLoanTable();
-    }
-
-    function renderLog(){
-      const log = $("#log");
-      log.innerHTML = state.log.slice().reverse().map(e=>`<div style="padding:8px;border-bottom:1px solid rgba(255,255,255,.03)"><div class="muted">${escapeHTML(e.t)}</div><div style="margin-top:6px">${e.m}</div></div>`).join("");
-    }
-
-    function renderChoices(){
-      const c = $("#choicesContainer");
-      c.innerHTML = "";
-      const choices = buildChoices();
-      choices.forEach(ch=>{
-        const b = document.createElement("button");
-        b.className = "choice";
-        b.innerHTML = `<div><div style="font-weight:800">${escapeHTML(ch.title)}</div><div class="muted">${escapeHTML(ch.meta)}</div></div><div class="muted">${escapeHTML(ch.delta)}</div>`;
-        b.addEventListener("click", ()=>{ ch.apply(); render(); saveState(); });
-        c.appendChild(b);
-      });
+    function closeModal(id){
+      const m = document.getElementById(id);
+      if(!m) return;
+      m.setAttribute("aria-hidden","true");
+      document.body.style.overflow="";
     }
 
     function renderMarket(){
-      const grid = $("#listingGrid");
-      if(!grid) return;
-      const tab = state._marketTab || "all";
-      const q = (state._marketQuery || "").trim().toLowerCase();
+      const tab = state.ui.market.tab;
+      const q = (state.ui.market.q || "").trim().toLowerCase();
+      const sort = state.ui.market.sort;
+
       let items = marketData.slice();
-      if(tab !== "all") items = items.filter(x=>x.type===tab);
-      if(q) items = items.filter(x=> (x.title + " " + x.sub + " " + x.tag).toLowerCase().includes(q));
+      if(tab !== "all") items = items.filter(x => x.type === tab);
+      if(q) items = items.filter(x => (x.title + " " + x.sub + " " + x.tag).toLowerCase().includes(q));
+
+      if(sort === "cheap") items.sort((a,b)=>a.price-b.price);
+      if(sort === "exp") items.sort((a,b)=>b.price-a.price);
+
+      $("#marketBudget").textContent = fmtTRY(state.economy.cash);
+
+      const grid = $("#listingGrid");
       grid.innerHTML = "";
-      items.forEach(item=>{
-        const el = document.createElement("div");
-        el.className = "listing-card";
-        el.innerHTML = `<div><div style="font-weight:800">${escapeHTML(item.title)}</div><div class="muted">${escapeHTML(item.sub)}</div></div><div style="display:flex;gap:8px;align-items:center;justify-content:space-between;"><div class="price">${fmtTRY(item.price)}</div><div><button class="btn" data-buy="${item.id}">Satın Al</button></div></div>`;
-        grid.appendChild(el);
+
+      items.forEach(item => {
+        const card = document.createElement("article");
+        card.className = "s-card";
+        const gradient = item.type === "weapon"
+          ? "linear-gradient(135deg,#c1ffef,#93b7ff)"
+          : item.type === "car"
+            ? "linear-gradient(135deg,#d4d4d4,#ffdd9e)"
+            : "linear-gradient(135deg,#ffd7ea,#c7ffd8)";
+
+        card.innerHTML = `
+          <div class="s-top">
+            <div class="thumb" aria-hidden="true" style="background:${gradient};"></div>
+            <div style="min-width:0;">
+              <div class="s-title">${escapeHTML(item.title)}</div>
+              <div class="s-sub">${escapeHTML(item.sub)}</div>
+            </div>
+          </div>
+          <div class="s-bottom">
+            <div>
+              <div class="price">${fmtTRY(item.price)}</div>
+              <div style="margin-top:6px;"><span class="badge">${escapeHTML(item.tag)}</span></div>
+            </div>
+            <button class="buy" type="button" data-buy="${item.id}">Satın Al</button>
+          </div>
+        `;
+        grid.appendChild(card);
       });
-      $$("[data-buy]").forEach(b=>b.removeEventListener("click", buyHandler)); // ensure no duplicates
-      $$("[data-buy]").forEach(b=>b.addEventListener("click", buyHandler));
+
+      $$("[data-buy]", grid).forEach(btn => {
+        btn.addEventListener("click", () => buyItem(btn.getAttribute("data-buy")));
+      });
     }
 
-    function buyHandler(e){
-      const id = e.currentTarget.getAttribute("data-buy");
-      buyItemFromMarket(id);
+    function buyItem(id){
+      const item = marketData.find(x => x.id === id);
+      if(!item) return;
+
+      if(state.economy.cash < item.price){
+        addLog("Pazar", "Bütçe yetmedi. Gelir artır ya da gideri azalt.");
+        return;
+      }
+
+      state.economy.cash -= item.price;
+      state.inventory.push({ id:item.id, title:item.title, type:item.type, price:item.price });
+
+      if(item.type === "weapon"){
+        addLog("Pazar", `Satın aldın: <strong>${escapeHTML(item.title)}</strong>. Bu şehirde bazı şeyler sessiz kalmaz.`);
+        state.player.risk = clamp(state.player.risk + (item.title.includes("Kaçak") ? 10 : 6), 0, 100);
+      }else if(item.type === "car"){
+        addLog("Pazar", `Araba aldın: <strong>${escapeHTML(item.title)}</strong>. Görünürlük arttı.`);
+        state.player.rep = clamp(state.player.rep + 2, 0, 100);
+        state.player.risk = clamp(state.player.risk + 2, 0, 100);
+      }else{
+        addLog("Pazar", `Ev aldın: <strong>${escapeHTML(item.title)}</strong>. Düzen puan toplar.`);
+        state.player.rep = clamp(state.player.rep + 3, 0, 100);
+      }
+
+      renderGame();
+      renderMarket();
     }
 
-    function renderAssetsList(){
-      const wrap = $("#assetsList");
-      if(!wrap) return;
+    /* ================== NPC Chat / Marriage ================== */
+    function selectedNPC(){
+      return state.npc.find(n => n.id === state.ui.selectedNpcId) || state.npc[0];
+    }
+
+    function npcMoodFromRelation(rel){
+      if(rel >= 80) return "Bağlı";
+      if(rel >= 55) return "Sıcak";
+      if(rel >= 30) return "Nötr";
+      return "Soğuk";
+    }
+
+    function renderNpcSelect(){
+      const sel = $("#npcSelect");
+      sel.innerHTML = state.npc.map(n => `<option value="${n.id}">${escapeHTML(n.name)} — ${escapeHTML(n.role)}</option>`).join("");
+      sel.value = state.ui.selectedNpcId;
+    }
+
+    function renderChat(){
+      const npc = selectedNPC();
+      if(!npc) return;
+
+      npc.mood = npcMoodFromRelation(npc.relation);
+      $("#npcMood").textContent = "Mod: " + npc.mood;
+      $("#relText").textContent = "İlişki: " + npc.relation;
+
+      const chat = $("#chatbox");
+      chat.innerHTML = npc.chat.map(msg => {
+        const me = msg.from === "me";
+        return `<div class="bubble ${me ? "me" : ""}">${escapeHTML(msg.text)}</div>`;
+      }).join("");
+      chat.scrollTop = chat.scrollHeight;
+
+      // marriage buttons
+      const spouse = state.player.spouseId ? state.npc.find(n=>n.id===state.player.spouseId) : null;
+      $("#spouse").textContent = spouse ? spouse.name : "Yok";
+      $("#btnMarry").disabled = !npc.romance || npc.married || state.player.spouseId || npc.relation < 75;
+      $("#btnMarry").title = $("#btnMarry").disabled
+        ? "Evlenmek için: romantik NPC + ilişki 75+ ve bekâr olmalısın."
+        : "Evlilik teklifi et";
+    }
+
+    function npcAutoReply(npc, context="generic"){
+      const rel = npc.relation;
+      const city = state.world.city;
+
+      const pools = {
+        generic: [
+          "Burada işler hızlı akar. Hızlı koşan düşer.",
+          "Şehir küçük ama dedikodu büyük.",
+          "Dikkatli ol. Doğru insanla yürürsen yol açılır."
+        ],
+        flirt: [
+          "Bu kadar açık konuşmana alışık değilim…",
+          "Seninle konuşmak iyi geliyor.",
+          "Beni şaşırtıyorsun. Bu şehirde az kişi böyle."
+        ],
+        married: [
+          "Bu işi büyütmek istiyorsan birlikte yürürüz.",
+          "İkimiz de biliyoruz: aile kurmak cesaret ister.",
+          "Daha sağlam duracağız. Bu şehir bizi kolay yutmaz."
+        ]
+      };
+
+      let base = pools[context] || pools.generic;
+      // flavor by city
+      if(city === "İstanbul") base = base.concat(["İstanbul’da kalabalık içinde kaybolmak kolay.", "Burada fırsat kadar tuzak da var."]);
+      if(city === "Ankara") base = base.concat(["Ankara’da düzen önemlidir. Düzgün görünmek bazen kurtarır."]);
+      if(city === "İzmir") base = base.concat(["İzmir’de insanlar gülümser ama hesap yapar."]);
+      if(city === "Trabzon") base = base.concat(["Trabzon’da ağlar güçlüdür. Yanlış kişiyi kızdırma."]);
+
+      // relation-sensitive
+      if(rel < 25) base = base.concat(["Çok yakın değiliz. Sınırlarını bil.", "Önce güven. Sonra konuşuruz."]);
+      if(rel > 70) base = base.concat(["Sana güveniyorum.", "Yanındayım. Kolay kolay bırakmam."]);
+
+      const text = base[Math.floor(Math.random()*base.length)];
+      npc.chat.push({ from:"npc", text });
+      if(npc.chat.length > 60) npc.chat.shift();
+    }
+
+    function sendChat(){
+      const npc = selectedNPC();
+      const input = $("#chatInput");
+      const text = (input.value || "").trim();
+      if(!text) return;
+
+      npc.chat.push({ from:"me", text });
+      if(npc.chat.length > 60) npc.chat.shift();
+
+      // small relation change based on message length
+      npc.relation = clamp(npc.relation + (text.length > 14 ? 2 : 1), 0, 100);
+
+      input.value = "";
+      npcAutoReply(npc, "generic");
+      renderChat();
+    }
+
+    function flirt(){
+      const npc = selectedNPC();
+      npc.chat.push({ from:"me", text:"Seninle biraz daha yakın olmak istiyorum." });
+      npc.relation = clamp(npc.relation + (npc.romance ? 8 : 2), 0, 100);
+      npcAutoReply(npc, "flirt");
+      renderChat();
+
+      addLog("NPC", `${npc.name} ile yakınlaşma denedin. İlişki: <strong>${npc.relation}</strong>.`);
+      renderGameHUD();
+    }
+
+    function marry(){
+      const npc = selectedNPC();
+      if(!npc.romance) return;
+
+      if(state.player.spouseId){
+        addLog("Aile", "Zaten evlisin. İkinci evlilik bu şehirde masum kalmaz.");
+        return renderGame();
+      }
+      if(npc.married){
+        addLog("NPC", "Bu kişi zaten evli. Şehir küçük; bedeli büyük.");
+        return renderGame();
+      }
+      if(npc.relation < 75){
+        addLog("NPC", "Evlilik için henüz erken. Güven tam değil.");
+        return renderGame();
+      }
+
+      state.player.spouseId = npc.id;
+      npc.married = true;
+
+      // Add spouse into family tree
+      state.family.push({ id:"spouse", relation:"Eş", name:npc.name, age:npc.age, job:npc.role });
+
+      npc.chat.push({ from:"npc", text:"Tamam. Beraber yürüyelim. Ama dürüst ol." });
+      addLog("Aile", `<strong>${npc.name}</strong> ile evlendin. Soy ağacına eklendi.`);
+
+      renderGame();
+    }
+
+    /* ================== Family Tree ================== */
+    function renderFamilyTree(){
+      const tree = $("#familyTree");
+      const lastName = state.player.lastName || "—";
+      $("#lastNameBadge").textContent = lastName;
+
+      // update player member full name
+      const pl = state.family.find(m => m.id === "player");
+      if(pl){
+        pl.name = `${state.player.firstName} ${state.player.lastName}`.trim();
+        pl.age = state.player.age;
+      }
+
+      const sorted = state.family.slice().sort((a,b) => (b.age||0) - (a.age||0));
+      tree.innerHTML = sorted.map(m => `
+        <div class="member">
+          <div class="who">
+            <strong>${escapeHTML(m.name || "—")}</strong>
+            <span>${escapeHTML(m.relation)} • ${escapeHTML(m.job || "—")} • ${m.age ?? "—"} yaş</span>
+          </div>
+          <span class="tag">${escapeHTML(m.relation)}</span>
+        </div>
+      `).join("");
+    }
+
+    /* ================== Rendering ================== */
+    function renderLog(){
+      const log = $("#log");
+      log.innerHTML = state.log.map(e => `
+        <div class="entry">
+          <div class="t">${escapeHTML(e.t)}</div>
+          <div class="m">${e.m}</div>
+        </div>
+      `).join("");
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function renderChoices(){
+      const wrap = $("#choices");
+      const choices = buildChoices();
       wrap.innerHTML = "";
-      if(state.inventory.length === 0){ wrap.innerHTML = `<div class="muted">Henüz malın yok.</div>`; return; }
-      state.inventory.forEach(a=>{
-        const div = document.createElement("div");
-        div.className = "asset-row";
-        div.innerHTML = `<div><div style="font-weight:800">${escapeHTML(a.title)}</div><div class="muted">${a.type} • Alış: ${fmtTRY(a.price)}</div></div><div style="display:flex;gap:8px;align-items:center;"><div class="muted">${a.rented?`Kira: ${fmtTRY(a.rentIncome)} • ${a.rentMonthsLeft} ay kaldı`:"Boş"}</div><div><button class="btn" data-sell="${a.id}">Sat</button><button class="btn" data-rent="${a.id}">Kirala</button></div></div>`;
-        wrap.appendChild(div);
-      });
-      $$("[data-sell]").forEach(b=>b.removeEventListener("click", sellHandler));
-      $$("[data-sell]").forEach(b=>b.addEventListener("click", sellHandler));
-      $$("[data-rent]").forEach(b=>b.removeEventListener("click", rentHandler));
-      $$("[data-rent]").forEach(b=>b.addEventListener("click", rentHandler));
-    }
-
-    function sellHandler(e){
-      const id = e.currentTarget.getAttribute("data-sell");
-      if(confirm("Satmak istediğine emin misin?")) sellAsset(id);
-    }
-
-    function rentHandler(e){
-      const id = e.currentTarget.getAttribute("data-rent");
-      const months = parseInt(prompt("Kaç ay kiraya verilsin? (ör. 3)","3")) || 0;
-      const monthly = parseInt(prompt("Aylık kira tutarı (₺)","8000")) || 0;
-      if(months>0 && monthly>0) rentOutAsset(id, months, monthly);
-    }
-
-    function renderLoanTable(){
-      const tbody = $("#loanTable");
-      if(!tbody) return;
-      tbody.innerHTML = "";
-      if(!state.bank.loans || state.bank.loans.length === 0){ tbody.innerHTML = `<tr><td colspan="4" class="muted">Aktif kredi yok.</td></tr>`; return; }
-      state.bank.loans.forEach(l=>{
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${fmtTRY(l.principal)}</td><td>${fmtTRY(l.remaining)}</td><td>${l.monthsLeft} ay</td><td>${(l.monthlyInterest*100).toFixed(2)}%</td>`;
-        tbody.appendChild(tr);
+      choices.forEach((ch, idx) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "choice";
+        b.style.animation = `fadeIn .55s var(--ease) both`;
+        b.style.animationDelay = `${idx*60}ms`;
+        b.innerHTML = `
+          <div>
+            <div class="title">${escapeHTML(ch.title)}</div>
+            <div class="meta">${escapeHTML(ch.meta)}</div>
+          </div>
+          <div class="delta">${escapeHTML(ch.delta)}</div>
+        `;
+        b.addEventListener("click", () => {
+          ch.apply();
+          renderGame();
+        });
+        wrap.appendChild(b);
       });
     }
 
-    function totalLoanRemaining(){ return state.bank.loans.reduce((s,l)=>s + (l.remaining||0), 0); }
+    function renderGameHUD(){
+      $("#hudName").textContent = `${state.player.firstName} ${state.player.lastName}`.trim() || "—";
+      $("#hudCity").textContent = state.world.city || "—";
+      $("#hudCash").textContent = fmtTRY(state.economy.cash);
+      $("#hudRep").textContent = state.player.rep;
+      $("#hudRisk").textContent = state.player.risk;
+    }
 
-    /* ========== Save / Load ========== */
-    function saveState(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){ console.warn("save failed",e); } }
-    window.addEventListener("beforeunload", ()=> saveState());
+    function renderEconomy(){
+      $("#cash").textContent = fmtTRY(state.economy.cash);
+      $("#debt").textContent = fmtTRY(state.economy.debt);
+      $("#income").textContent = fmtTRY(state.economy.income);
+      $("#expense").textContent = fmtTRY(state.economy.expense);
+      $("#cityBadge").textContent = state.world.city || "—";
+    }
 
-    /* ========== Helpers ========== */
-    function addLog(t,m){ state.log.push({t,m}); if(state.log.length>120) state.log.shift(); renderLog(); saveState(); }
-    function escapeHTML(s){ return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
+    function renderTopStory(){
+      $("#playerFullName").textContent = `${state.player.firstName} ${state.player.lastName}`.trim() || "—";
+      $("#age").textContent = state.player.age;
+      $("#status").textContent = state.player.status || "—";
+      $("#dateDisplay").textContent = `${state.world.year} • ${state.world.month}. Ay`;
 
-    /* ========== Events & UI wiring ========== */
-    function openModal(id){ const m = document.getElementById(id); if(!m) return; m.setAttribute("aria-hidden","false"); document.body.style.overflow="hidden"; }
-    function closeModalById(id){ const m = document.getElementById(id); if(!m) return; m.setAttribute("aria-hidden","true"); document.body.style.overflow=""; }
+      $("#repText").textContent = `İtibar: ${state.player.rep}`;
+      $("#riskText").textContent = `Risk: ${state.player.risk}`;
+      $("#repBar").style.width = clamp(state.player.rep, 0, 100) + "%";
 
-    $("#btnOpenBank").addEventListener("click", ()=>{ openModal("bankModal"); renderLoanTable(); });
-    $("#btnAssets").addEventListener("click", ()=>{ openModal("assetsModal"); renderAssetsList(); });
+      // narrative header
+      $("#sceneTitle").textContent = `${state.world.city || "Şehir"} — Başlangıç`;
+      $("#sceneDesc").innerHTML = `İlanlar, çevre ve aile... <strong>${escapeHTML(state.world.city || "Seçtiğin şehir")}</strong> seni şekillendirir.`;
+    }
 
-    $$("[data-close]").forEach(b=>b.addEventListener("click", e=>{ const id = e.currentTarget.getAttribute("data-close"); closeModalById(id); }));
+    function renderGame(){
+      renderGameHUD();
+      renderTopStory();
+      renderEconomy();
+      renderLog();
+      renderChoices();
+      renderNpcSelect();
+      renderChat();
+      renderFamilyTree();
+    }
 
-    $("#btnDeposit").addEventListener("click", ()=>{ depositToBank($("#bankAmount").value); $("#bankAmount").value=""; });
-    $("#btnWithdraw").addEventListener("click", ()=>{ withdrawFromBank($("#bankAmount").value); $("#bankAmount").value=""; });
-    $("#btnTakeLoan").addEventListener("click", ()=>{ takeLoan($("#loanAmount").value, $("#loanTerm").value); $("#loanAmount").value=""; renderLoanTable(); });
-    $("#btnRepayLoan").addEventListener("click", ()=>{ const amt = parseInt(prompt("Ne kadar ödeyeceksin? (₺)","50000"))||0; repayLoan(amt); renderLoanTable(); });
+    /* ================== Save / Load ================== */
+    function save(){
+      state.meta.updatedAt = Date.now();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      addLog("Sistem", "Kaydedildi.");
+      renderGameHUD();
+    }
 
-    $("#btnGoMarket").addEventListener("click", ()=>{ openModal("marketModal"); renderMarket(); });
-    $("#btnGoDocks").addEventListener("click", ()=>{ shadyJob(); });
-    $("#btnGoBank").addEventListener("click", ()=>{ openModal("bankModal"); });
+    function load(){
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw){
+        addLog("Sistem", "Kayıt bulunamadı.");
+        return;
+      }
+      try{
+        const parsed = JSON.parse(raw);
+        state = sanitize(parsed);
+        addLog("Sistem", "Kayıt yüklendi.");
+        // if player exists, jump to game
+        if(state.player.firstName && state.player.lastName && state.world.city){
+          showView("#viewGame");
+          renderGame();
+        }else{
+          showView("#viewStart");
+        }
+      }catch(e){
+        addLog("Sistem", "Kayıt okunamadı (bozuk).");
+      }
+    }
 
-    $$("#mapSvg .poi").forEach(p=>{
-      p.addEventListener("click", ()=>{
-        const what = p.getAttribute("data-poi");
-        if(what === "market"){ openModal("marketModal"); renderMarket(); }
-        if(what === "docks"){ shadyJob(); }
-        if(what === "police"){ visitPolice(); }
-        if(what === "hospital"){ visitHospital(); }
-        if(what === "bank"){ openModal("bankModal"); }
-      });
+    function resetAll(){
+      localStorage.removeItem(STORAGE_KEY);
+      state = defaultState();
+      renderCityGrid();
+      showView("#viewStart");
+      renderGameHUD();
+    }
+
+    function sanitize(s){
+      const d = defaultState();
+      const out = structuredClone(d);
+
+      try{
+        out.world = { ...d.world, ...(s.world||{}) };
+        out.player = { ...d.player, ...(s.player||{}) };
+        out.economy = { ...d.economy, ...(s.economy||{}) };
+        out.inventory = Array.isArray(s.inventory) ? s.inventory : [];
+        out.log = Array.isArray(s.log) ? s.log.slice(-90) : d.log.slice();
+        out.npc = Array.isArray(s.npc) ? s.npc : d.npc;
+        out.family = Array.isArray(s.family) ? s.family : d.family;
+        out.ui = { ...d.ui, ...(s.ui||{}) };
+        out.meta = { ...d.meta, ...(s.meta||{}) };
+      }catch(e){
+        return d;
+      }
+
+      out.player.rep = clamp(Number(out.player.rep)||0, 0, 100);
+      out.player.risk = clamp(Number(out.player.risk)||0, 0, 100);
+      out.player.age = clamp(Number(out.player.age)||18, 0, 120);
+      out.economy.cash = Number(out.economy.cash)||0;
+      out.economy.debt = Math.max(0, Number(out.economy.debt)||0);
+      out.economy.income = Math.max(0, Number(out.economy.income)||0);
+      out.economy.expense = Math.max(0, Number(out.economy.expense)||0);
+      out.economy.interest = clamp(Number(out.economy.interest)||0.018, 0.005, 0.08);
+
+      if(!out.ui.selectedNpcId || !out.npc.some(n=>n.id===out.ui.selectedNpcId)){
+        out.ui.selectedNpcId = out.npc[0]?.id || "sibel";
+      }
+
+      return out;
+    }
+
+    /* ================== Start Form ================== */
+    function seedDemo(){
+      $("#firstName").value = "Kadir";
+      $("#lastName").value = "Tek";
+      // auto pick first city
+      const first = $$(".city", $("#cityGrid"))[0];
+      if(first){
+        first.click();
+      }
+    }
+
+    $("#startForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const firstName = ($("#firstName").value || "").trim();
+      const lastName = ($("#lastName").value || "").trim();
+      const city = ($("#birthCity").value || "").trim();
+
+      if(!firstName || !lastName || !city){
+        addLog("Sistem", "Ad, soyad ve şehir seçimi zorunlu.");
+        alert("Lütfen ad, soyad ve doğduğun şehri seç.");
+        return;
+      }
+
+      state.player.firstName = firstName.slice(0, 26);
+      state.player.lastName = lastName.slice(0, 26);
+      state.world.city = city;
+
+      // city affects starting stats slightly
+      const mod = cityModifiers(city);
+      state.player.risk = clamp(state.player.risk + mod.riskAdd, 0, 100);
+
+      state.log = [
+        { t:"Başlangıç", m:`<strong>${escapeHTML(city)}</strong> doğumlusun. Adın: <strong>${escapeHTML(firstName)} ${escapeHTML(lastName)}</strong>. Şimdi şehir seni test edecek.` }
+      ];
+
+      showView("#viewGame");
+      renderGame();
+      save();
     });
 
-    $("#marketSearch").addEventListener("input", (e)=>{ state._marketQuery = e.target.value; renderMarket(); });
-    $("#marketFilter").addEventListener("change", (e)=>{ state._marketTab = e.target.value; renderMarket(); });
+    $("#btnStartLoad").addEventListener("click", () => load());
+    $("#btnDemoSeed").addEventListener("click", seedDemo);
 
-    $("#btnNextMonth").addEventListener("click", ()=> nextMonth());
-    $("#btnMeet").addEventListener("click", ()=> { meetNpc(); });
-
-    $("#btnAddRelative").addEventListener("click", ()=> openModal("addRelativeModal"));
-    $("#btnSaveRelative").addEventListener("click", ()=>{
-      const name = $("#relName").value.trim(); const rel = $("#relRelation").value.trim(); const age = Number($("#relAge").value) || 0;
-      if(!name){ alert("İsim gir."); return; }
-      const id = "f_"+Date.now();
-      state.family.push({ id, name, relation: rel || "Akraba", age });
-      addLog("Soy Ağacı", `${name} eklendi.`);
-      closeModalById("addRelativeModal"); $("#relName").value=""; $("#relRelation").value=""; $("#relAge").value="";
-      render(); saveState();
+    /* ================== Game Buttons ================== */
+    $("#btnSave").addEventListener("click", save);
+    $("#btnLoad").addEventListener("click", load);
+    $("#btnReset").addEventListener("click", () => {
+      if(confirm("Tüm kayıt silinsin mi?")){
+        resetAll();
+      }
     });
 
-    /* ========== Small actions reused ========== */
-    function work(){ const gain = 24000 + Math.round(state.player.rep * 220); state.economy.cash += gain; state.player.rep = clamp(state.player.rep+1,0,100); addLog("Günlük", `İşe gittin. Kazanç: ${fmtTRY(gain)}.`); render(); saveState(); }
-    function shadyJob(){ const gain = 45000 + Math.round(state.player.risk * 650); const caught = chance(catchChance() + 0.08); if(caught){ addLog("Karakol","Kaçak işte yakalandın."); state.player.risk = clamp(state.player.risk+16,0,100); state.player.rep = clamp(state.player.rep-7,0,100); state.player.jail = Math.max(state.player.jail,2); } else { addLog("Kaçak", `Hızlı para: ${fmtTRY(gain)}.`); state.economy.cash += gain; state.player.risk = clamp(state.player.risk+8,0,100); state.player.mafia = clamp(state.player.mafia+4,0,100); } render(); saveState(); }
-    function visitHospital(){ const cost = 18000; if(state.economy.cash < cost){ addLog("Hastane","Nakit yetmedi."); return; } state.economy.cash -= cost; state.player.health = clamp(state.player.health+18,0,100); state.player.risk = clamp(state.player.risk-2,0,100); addLog("Hastane", `Muayene: ${fmtTRY(cost)}.`); render(); saveState(); }
-    function visitPolice(){ const bribe = 35000; const can = state.economy.cash >= bribe; const successChance = clamp(0.25 + state.player.rep/200, 0.25, 0.65); if(!can){ addLog("Karakol","Nakit yok, risk arttı."); state.player.risk = clamp(state.player.risk+2,0,100); render(); saveState(); return; } state.economy.cash -= bribe; if(chance(successChance)){ addLog("Karakol", `Yumuşama oldu: ${fmtTRY(bribe)}.`); state.player.risk = clamp(state.player.risk-10,0,100); state.player.rep = clamp(state.player.rep+1,0,100); } else { addLog("Karakol", `İş ters gitti: ${fmtTRY(bribe)} gitti.`); state.player.risk = clamp(state.player.risk+8,0,100); } render(); saveState(); }
+    $("#btnMarket").addEventListener("click", () => { openModal("marketModal"); renderMarket(); });
+    $("#btnNextMonth").addEventListener("click", nextMonth);
+    $("#btnWork").addEventListener("click", work);
+    $("#btnShady").addEventListener("click", shadyJob);
 
-    function meetNpc(){ const pool = [ { id:"yagiz", name:"Yağız Şen", role:"Mali müşavir", tie:12, heat:6 }, { id:"nur", name:"Nur Eren", role:"Kripto OTC", tie:10, heat:22 }, { id:"tahir", name:"Tahir Yılmaz", role:"Karakol içi tanıdık", tie:8, heat:30 } ]; const candidate = pool.find(p => !state.npc.some(n => n.id === p.id)); if(!candidate){ addLog("NPC","Yeni kimse yok."); return; } state.npc.push(candidate); addLog("NPC", `Yeni: ${candidate.name}`); render(); saveState(); }
+    /* NPC chat controls */
+    $("#npcSelect").addEventListener("change", (e) => {
+      state.ui.selectedNpcId = e.target.value;
+      renderChat();
+    });
+    $("#btnSend").addEventListener("click", sendChat);
+    $("#chatInput").addEventListener("keydown", (e) => {
+      if(e.key === "Enter") sendChat();
+    });
+    $("#btnFlirt").addEventListener("click", flirt);
+    $("#btnMarry").addEventListener("click", marry);
 
-    /* ========== Init ========== */
+    /* ================== Market Controls ================== */
+    $$(".s-tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        $$(".s-tab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        state.ui.market.tab = tab.getAttribute("data-tab");
+        renderMarket();
+      });
+    });
+    $("#marketSearch").addEventListener("input", (e) => {
+      state.ui.market.q = e.target.value;
+      renderMarket();
+    });
+    $("#marketSort").addEventListener("change", (e) => {
+      state.ui.market.sort = e.target.value;
+      renderMarket();
+    });
+    $("#marketCity").addEventListener("change", (e) => {
+      state.ui.market.city = e.target.value;
+      // (Optional) could influence items list; kept simple for now.
+      renderMarket();
+    });
+
+    /* Modal close */
+    $$("[data-close]").forEach(btn => btn.addEventListener("click", () => closeModal(btn.getAttribute("data-close"))));
+    window.addEventListener("keydown", (e) => {
+      if(e.key !== "Escape") return;
+      const m = $("#marketModal");
+      if(m.getAttribute("aria-hidden") === "false") closeModal("marketModal");
+    });
+    $("#marketModal").addEventListener("click", (e) => {
+      if(e.target.id === "marketModal") closeModal("marketModal");
+    });
+
+    /* ================== Reveal on scroll ================== */
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(en=>{
+        if(en.isIntersecting) en.target.classList.add("in");
+      });
+    }, { threshold:.08 });
+
+    /* ================== Boot ================== */
     (function init(){
-      if(!state.crypto.history || state.crypto.history.length===0) state.crypto.history = generateHistory(state.crypto.price);
-      render();
+      renderCityGrid();
+      renderGameHUD();
+
+      // reveal
+      $$(".reveal").forEach(el => io.observe(el));
+
+      // if existing save with valid start, open game
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(raw){
+        try{
+          const parsed = JSON.parse(raw);
+          state = sanitize(parsed);
+          if(state.player.firstName && state.player.lastName && state.world.city){
+            showView("#viewGame");
+            renderGame();
+          }else{
+            showView("#viewStart");
+          }
+        }catch(e){
+          // ignore
+        }
+      }
     })();
   </script>
+
+  <style>
+    @keyframes fadeIn{
+      from{ opacity:0; transform:translateY(8px); }
+      to{ opacity:1; transform:translateY(0); }
+    }
+  </style>
 </body>
 </html>
